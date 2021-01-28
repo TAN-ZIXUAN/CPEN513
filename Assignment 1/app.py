@@ -108,7 +108,7 @@ class App:
                     self.file_dialog = UIFileDialog(pygame.Rect(160, 50, 440, 500),
                                                     self.ui_manager,
                                                     window_title='Load File...',
-                                                    initial_file_path='benchmarks/',
+                                                    initial_file_path='Assignment 1/benchmarks/',
                                                     allow_existing_files_only=True)
                     self.load_button.disable()
 
