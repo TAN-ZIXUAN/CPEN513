@@ -182,18 +182,19 @@ class App:
                 (source_x, source_y) = self.wire2source[wire]
                 # print(x, y)
                 # generate colors for each group of pins
-                color_tmp = 56+wire*30
-                while color_tmp > 256:
+                color_tmp = 15+wire*30
+                while color_tmp > 255:
                     color_tmp -= 40
-                self.wire2colour = (color_tmp, 100, 60)
-                grid[source_x][source_y].mark_source(self.wire2colour)
+                
+                self.wire2colour[wire] = (color_tmp, 100, 60)
+                grid[source_x][source_y].mark_source(self.wire2colour[wire])
                 
 
                 for (sink_x, sink_y) in self.wire2sink[wire]:
-                    grid[sink_x][sink_y].mark_sink(self.wire2colour)
+                    grid[sink_x][sink_y].mark_sink(self.wire2colour[wire])
 
                 
-                pygame.draw.circle(self.subsurface, c.RED, (source_x*self.size_x + self.size_x / 2, source_y*self.size_y + self.size_y / 2), self.size_x/4)
+                
             
             
             
@@ -203,6 +204,7 @@ class App:
             self.window_surface.blit(self.background, (0, 0))
             self.ui_manager.draw_ui(self.window_surface)
             draw_blocks(self.subsurface, grid)
+        
             draw_grid(self.subsurface,self.num_x, self.size_x, c.WIDTH)
             # font = pygame.font.SysFont('arial', 50)
             # text = font.render("hello", True, (0, 0, 0)) # display text in a position

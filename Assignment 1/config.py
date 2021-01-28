@@ -1,5 +1,5 @@
-WIDTH = 1000
-HEIGHT = 500
+WIDTH = 1500
+HEIGHT = 750
 
 #colors
 RED = (255, 0, 0)
