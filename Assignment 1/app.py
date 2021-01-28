@@ -1,8 +1,12 @@
+import collections
+
 import pygame
 import pygame_gui
 from pygame_gui.elements import UIButton
 from pygame_gui.windows import UIFileDialog
 from pygame_gui.core.utility import create_resource_path
+
+
 
 from block import Block
 import config as c
@@ -15,25 +19,27 @@ def create_grid(size_x, size_y, num_x):
         for j in range(num_x):
             block = Block(i, j, size_x, size_y)
             grid[i].append(block)
-        
+
     return grid
 
-    
 
 
-def draw_grid(surface, grid, num_x, size_x, width):
-    # surface.fill(c.WHITE)
 
-    for row in grid:
-        for block in row:
-            block.draw_rect(surface)
-    
+
+def draw_grid(surface,num_x, size_x, width):
+
     for i in range(num_x):
         pygame.draw.line(surface, c.BLACK, (0, i * size_x), (width, i * size_x))
         for j in range(num_x):
             pygame.draw.line(surface, c.BLACK, (j * size_x, 0), (j * size_x, width))
-        pygame.display.update()
+        # pygame.display.update()
+    
+    # pygame.draw.line(surface, c.BLACK, (0, i * size_x), (width, i * size_x))
 
+def draw_blocks(surface, grid):
+    for row in grid:
+        for block in row:
+            block.draw_rect(surface)
 
 class App:
     def __init__(self):
@@ -48,14 +54,21 @@ class App:
         self.num_wires = 0
         self.obs = []
         self.wire2source ={}
-        self.wire2sink = {}
+        self.wire2sink = collections.defaultdict(list)
 
         # set up window_surfce
         pygame.display.set_caption("Assignment 1 ROUTING")
-        self.window_surface = pygame.display.set_mode((c.WIDTH, c.HEIGHT+100)) #extra room for button
-        self.ui_manager = pygame_gui.UIManager((c.WIDTH, c.HEIGHT+100), "theme.json")
-        self.background = pygame.Surface((c.WIDTH, c.HEIGHT+100))
+        self.window_surface = pygame.display.set_mode((c.WIDTH, c.HEIGHT + 100)) 
+
+        self.ui_manager = pygame_gui.UIManager((c.WIDTH, c.HEIGHT + 100), "theme.json")
+        self.background = pygame.Surface((c.WIDTH, c.HEIGHT + 100))
+        # self.background.fill(c.GREY)
+
+        rect = pygame.Rect(0, 0, c.WIDTH, c.HEIGHT)
+        self.subsurface = self.window_surface.subsurface(rect)
         self.background.fill(self.ui_manager.ui_theme.get_colour('dark_bg'))
+
+        # print("color", self.ui_manager.ui_theme.get_colour('dark_bg'))
 
         # button for loading files
         self.load_button = UIButton(relative_rect=pygame.Rect(-180, -60, 150, 30),
@@ -70,6 +83,7 @@ class App:
         self.loaded_file = []
         self.clock = pygame.time.Clock()
         self.is_running = True
+        self.wire2colour = {}
 
     # create a grid of blocks(num_x * num_y). block size: size * size
 
@@ -81,9 +95,9 @@ class App:
     #     pygame.draw.rec(surface, self.colour, rect)
 
     def run(self):
-        
+
         while self.is_running:
-            time_delta = self.clock.tick(60) / 1000.0
+            time_delta = self.clock.tick(60) / 100.0
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
@@ -120,6 +134,7 @@ class App:
                     for i in range(self.num_obs):
                         self.obs.append((int(self.loaded_file[2 + i][0]), int(self.loaded_file[2 + i][1])))
 
+                    print("obs", self.obs)
                     self.num_wires = int(self.loaded_file[2 + self.num_obs][0])
                     print("num of wires", self.num_wires)
                     for i in range(self.num_wires):
@@ -128,9 +143,10 @@ class App:
                         num_pins = int(self.loaded_file[2 + self.num_obs + 1 + i][0])
                         print("num of pins", num_pins)
                         self.wire2source[i] = (int(self.loaded_file[2 + self.num_obs + 1 + i][1]), int(self.loaded_file[2 + self.num_obs + 1 + i][2]))
-
+                        tmp = 0 # for pairing sinks
                         for j in range(num_pins - 1):
-                            self.wire2sink[i] = (int(self.loaded_file[2 + self.num_obs + 1 + i][3 + j]), int(self.loaded_file[2 + self.num_obs + 1 + i][4 + j]))
+                            self.wire2sink[i].append((int(self.loaded_file[2 + self.num_obs + 1 + i][3 + j + tmp]), int(self.loaded_file[2 + self.num_obs + 1 + i][4 + j + tmp])))
+                            tmp += 1
 
 
                     print("-----------------------num_x, num_y --------------------")
@@ -153,23 +169,50 @@ class App:
 
 
                 self.ui_manager.process_events(event)
+            
+            grid = create_grid(self.size_x, self.size_y, self.num_x)
+
+            
+
+            for (obs_x, obs_y) in self.obs:
+                grid[obs_x][obs_y].mark_obs()
+            
+
+            for wire in self.wire2source:
+                (source_x, source_y) = self.wire2source[wire]
+                # print(x, y)
+                # generate colors for each group of pins
+                color_tmp = 56+wire*30
+                while color_tmp > 256:
+                    color_tmp -= 40
+                self.wire2colour = (color_tmp, 100, 60)
+                grid[source_x][source_y].mark_source(self.wire2colour)
+                
+
+                for (sink_x, sink_y) in self.wire2sink[wire]:
+                    grid[sink_x][sink_y].mark_sink(self.wire2colour)
+
+                
+                pygame.draw.circle(self.subsurface, c.RED, (source_x*self.size_x + self.size_x / 2, source_y*self.size_y + self.size_y / 2), self.size_x/4)
+            
+            
+            
 
             self.ui_manager.update(time_delta)
 
             self.window_surface.blit(self.background, (0, 0))
             self.ui_manager.draw_ui(self.window_surface)
+            draw_blocks(self.subsurface, grid)
+            draw_grid(self.subsurface,self.num_x, self.size_x, c.WIDTH)
             # font = pygame.font.SysFont('arial', 50)
             # text = font.render("hello", True, (0, 0, 0)) # display text in a position
             # self.window_surface.blit(text, (9, 9))
-            
-            grid = create_grid(self.size_x, self.size_y, self.num_x)
 
-            draw_grid(self.window_surface, grid, self.num_x, self.size_x, c.WIDTH)
+            # rect = pygame.Rect(0, 0, c.WIDTH, c.HEIGHT)
             pygame.display.update()
 
 
-        
-        
+
 
 
 

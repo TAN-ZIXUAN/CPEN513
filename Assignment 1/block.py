@@ -1,3 +1,4 @@
+import numpy as np
 import pygame
 import config as c
 
@@ -14,7 +15,7 @@ class Block:
 
 
 
-        self.colour = c.WHITE
+        self.colour = c.GREY
 
 
     def get_pos(self):
@@ -23,20 +24,22 @@ class Block:
     def draw_rect(self, surface): # draw rectangle
         rect = pygame.Rect(self.coor_x, self.coor_y, self.size_x, self.size_y)
         pygame.draw.rect(surface, self.colour, rect)
+
     
     # TODO how to scale text perfectly to fit into a block?
     def draw_text(self, text):
         text_font = pygame.font.SysFont(None, 12)
         text_image = text_font.render(text, True, c.BLACK. c.WHITE)
 
-    def mark_source(self):
-        self.colour = c.ORANGE
+    def mark_source(self, colour):
+        self.colour = colour
+        
 
-    def mark_sink(self):
-        self.colour = c.GREEN
+    def mark_sink(self, colour):
+        self.colour = colour
 
     def mark_obs(self): # mark obstacle with colour BLUE
-        self.colour = c.BLUE
+        self.colour = c.BLACK
 
     def mark_path(self):
         self.colour = c.PURPLE
@@ -50,3 +53,5 @@ class Block:
 
     def is_obs(self):
         return self.colour == c.BLUE
+
+    # def update_neighbours(self):
