@@ -4,13 +4,11 @@ from pygame_gui.elements import UIButton
 from pygame_gui.windows import UIFileDialog
 from pygame_gui.core.utility import create_resource_path
 
+import config as c
+import Block
+
 WIDTH = 1000
 HEIGHT = 500
-NUM_X = 12
-NUM_Y = 9
-
-SIZE_X = 1000 / NUM_X
-SIZE_Y = 500 / NUM_Y
 
 #colors
 RED = (255, 0, 0)
@@ -25,18 +23,19 @@ GREY = (128, 128, 128)
 TURQUOISE = (64, 224, 208)
 
 class Window:
-    def __init__(self):
+    def __init__(self, row, col):
         pygame.init()
-        
-        # self.row = row
-        # self.col = col
+
+        self.row = row
+        self.col = col
+        self.colour = WHITE
         # self.x = row * width
         # self.y = col * width
         # self.colour = WHITE
         # self.width = width
         # self.height = height
         # self.total_rows = total_rows
-        # self.neighbours = []
+        self.neighbours = []
         # self.sources = []
         # self.sinks = []
         self.num_x = 0
@@ -47,9 +46,15 @@ class Window:
         self.wire2source ={}
         self.wire2sink = {}
 
-        
+        self.size_x = 0
+        self.size_y = 0
 
-        pygame.display.set_caption("Assignment 1")
+        self.x = 0
+        self.y = 0
+
+
+
+        pygame.display.set_caption("Assignment 1 ROUTING")
         self.window_surface = pygame.display.set_mode((WIDTH, HEIGHT))
         self.ui_manager = pygame_gui.UIManager((WIDTH, HEIGHT), "theme.json")
         self.background = pygame.Surface((WIDTH, WIDTH))
@@ -68,24 +73,40 @@ class Window:
         self.loaded_file = []
         self.clock = pygame.time.Clock()
         self.is_running = True
-    
-    # def get_pos(self):
-    #     return self.row, self.col
-        
 
-    # def make_obstacle(self):
-    #     self.colour = BLUE
-    # def make_path(self):
-    #     self.colour = PURPLE
-    # def draw(self, window):
-    #     pygame.draw.rect(window, self.colour, (self.x, self.y, self.width, self.width))
+    def get_pos(self):
+        return self.row, self.col
+
+    def make_grid(self, num_x, num_y, size_x, size_y):
+        grid = []
+        for i in range(num_x):
+            grid.append([])
+            for j in range(num_y):
+                
+
+
+
+
+    def make_source(self):
+        self.colour = ORANGE
+    
+    def make_sink(self):
+        self.colour = GREEN
+
+    def make_obstacle(self):
+        self.colour = BLUE
+    def make_path(self):
+        self.colour = PURPLE
+    def draw_rec(self, surface): # draw rectangle
+        rect = pygame.Rect(self.x, self.y, self.size_x, self.size_y)
+        pygame.draw.rec(surface, self.colour, rect)
 
     # def update_neighbours(self, grid):
     #     self.neighbours = []
 
 
 
-    
+
 
     def run(self):
         while self.is_running:
@@ -131,10 +152,10 @@ class Window:
                         num_pins = int(self.loaded_file[2 + self.num_obs + 1 + i][0])
                         print("num of pins", num_pins)
                         self.wire2source[i] = (int(self.loaded_file[2 + self.num_obs + 1 + i][1]), int(self.loaded_file[2 + self.num_obs + 1 + i][2]))
-                        
+
                         for j in range(num_pins - 1):
                             self.wire2sink[i] = (int(self.loaded_file[2 + self.num_obs + 1 + i][3 + j]), int(self.loaded_file[2 + self.num_obs + 1 + i][4 + j]))
-                    
+
 
                     print("-----------------------num_x, num_y --------------------")
                     print(self.num_x, self.num_y)
@@ -161,11 +182,19 @@ class Window:
 
             self.window_surface.blit(self.background, (0, 0))
             self.ui_manager.draw_ui(self.window_surface)
+            # font = pygame.font.SysFont('arial', 50)
+            # text = font.render("hello", True, (0, 0, 0)) # display text in a position
+            # self.window_surface.blit(text, (9, 9))
 
             pygame.display.update()
 
+        self.size_x = WIDTH / self.num_x
+        self.size_y = HEIGHT / self.num_y
+        self.x = self.row * self.size_x
+        self.y = self.col * self.size_y
 
 
 if __name__ == "__main__":
-    app = Window()
+    app = Window(10, 10)
+
     app.run()
