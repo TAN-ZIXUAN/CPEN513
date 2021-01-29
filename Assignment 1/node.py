@@ -8,9 +8,7 @@ class Node:
         self.coor_x = row * c.SIZE_X
         self.coor_y = col * c.SIZE_Y
         self.colour = c.WHITE
-
         self.neighbours = []
-
         # node type
         # e: empty
         # o: obstacle
@@ -22,6 +20,8 @@ class Node:
 
     def is_pin(self):
         return self.is_source() or self.is_sink()
+    def get_pos(self):
+        return self.row, self.col
 
     def is_source(self):
         return (self.row, self.col) in c.SOURCES
@@ -29,11 +29,11 @@ class Node:
         return (self.row, self.col) in c.SINKS
     def is_obs(self): # is obstacles
         return (self.row, self.col) in c.OBS
-    def can_pass(self, source): # whether we can wire on this node 
+    def can_pass(self, source): # whether we can wire on this node  #
         if self.type == "e":
             return True
         elif self.type == "sink": # if it's sink, it has to be the source's sink
-            return (self.row, self.col) in c.SOURCE2SINKS[source]
+            return (self.row, self.col) in c.SOURCE2SINKS[source.get_pos]
         return False
     
     
@@ -45,33 +45,21 @@ class Node:
     def mark_routed(self):
         self.type = "r"
 
-    def get_neighbours(self): # get valid neighbour for curr_node
+    def get_neighbours(self, src): # get valid neighbour for curr_node
         self.neighbours = [] # valid neighbours: sink or empty node
 
-        if self.row < c.NUM_X - 1 and c.GRID[self.row + 1][self.col].can_pass(): # DOWN
+        if self.row < c.NUM_X - 1 and c.GRID[self.row + 1][self.col].can_pass(src): # DOWN
             self.neighbours.append(c.GRID[self.row + 1][self.col])
-        if self.row > 0 and c.GRID[self.row - 1][self.col].can_pass(): # UP
-            self.neighbours.append(gc.GRID[self.row - 1][self.col])
-        if self.col <  c.NUM_X - 1 and c.GRID[self.row][self.col + 1].can_pass(): # RIGHT
+        if self.row > 0 and c.GRID[self.row - 1][self.col].can_pass(src): # UP
+            self.neighbours.append(c.GRID[self.row - 1][self.col])
+        if self.col <  c.NUM_Y - 1 and c.GRID[self.row][self.col + 1].can_pass(src): # RIGHT
             self.neighbours.append(c.GRID[self.row][self.col + 1])
 
-        if self.col > 0 and c.GRID[self.row][self.col - 1].can_pass(): # LEFT
+        if self.col > 0 and c.GRID[self.row][self.col - 1].can_pass(src): # LEFT
             self.neighbours.append(c.GRID[self.row][self.col - 1])
 
 
-    def get_neighbours(self): # get valid neighbour for curr_node
-        self.neighbours = [] # valid neighbours: sink or empty node
-
-        if self.row < c.NUM_X - 1 and c.GRID[self.row + 1][self.col].can_pass(): # DOWN
-            self.neighbours.append((self.row + 1, self.col))
-        if self.row > 0 and c.GRID[self.row - 1][self.col].can_pass(): # UP
-            self.neighbours.append((self.row - 1, self.col))
-        if self.col <  c.NUM_X - 1 and c.GRID[self.row][self.col + 1].can_pass(): # RIGHT
-            self.neighbours.append((self.row, self.col + 1))
-
-        if self.col > 0 and c.GRID[self.row][self.col - 1].can_pass(): # LEFT
-            self.neighbours.append((self.row, self.col - 1))
-
+    
 
 
 

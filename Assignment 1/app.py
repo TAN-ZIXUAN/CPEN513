@@ -95,7 +95,10 @@ class App:
                 draw_grid(self.subsurface, c.NUM_X, c.SIZE_X) # draw nodes first bc node will cover the grid the boarderlines
                 source= c.SOURCES[0]
                 # draw = lamda: draw(self.subsurface, c.GRID, c.NUM_X, c.SIZE_X)
-                alg.a_star(lambda:draw(self.subsurface, c.GRID, c.NUM_X, c.SIZE_X), c.GRID, source, c.SOURCE2SINKS[source][0])
+                source_node = c.GRID[source[0]][source[1]]
+                sink = c.SOURCE2SINKS[source][0]
+                sink_node = c.GRID[sink[0]][sink[1]]
+                alg.a_star(lambda:draw(self.subsurface, c.GRID, c.NUM_X, c.SIZE_X), c.GRID, source_node, sink_node )
 
             pygame.display.update()
 
@@ -105,3 +108,4 @@ if __name__ == "__main__":
     app = App()
 
     app.run()
+    pygame.qui()

@@ -95,5 +95,25 @@ def backtracing(pre, curr, draw):
 		curr.mark_path()
 
 		draw()
+
+
+# def get_neighbours(coord, src): # get valid neighbour for curr_node   # just a sinple tupe contains 
+#     src = c.GRID[src[0]][src[1]]
+#     row, col = coord
+
+#     neighbours = [] # valid neighbours: sink or empty node
+
+#     if row < c.NUM_X - 1 and c.GRID[row + 1][col].can_pass(src): # DOWN
+#         neighbours.append((row + 1, col))
+#     if row > 0 and c.GRID[row - 1][col].can_pass(src): # UP
+#         neighbours.append((row - 1, col))
+#     if col <  c.NUM_X - 1 and c.GRID[row][col + 1].can_pass(src): # RIGHT
+#         neighbours.append((row, col + 1))
+
+#     if col > 0 and c.GRID[row][col - 1].can_pass(src): # LEFT
+#         neighbours.append((row, col - 1))
+    
+#     return neighbours
+
 # algorithm
 

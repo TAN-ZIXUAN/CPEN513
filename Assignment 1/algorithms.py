@@ -9,7 +9,7 @@ f_n = g_n + h_n
 g_n: shortest path from source node to curr_node
 h_n: heuristic. estimate dist from curr_node to source node. manhattan dist used here
 '''
-def a_star(draw, grid, source, sink): 
+def a_star(draw, grid, source, sink): # source and sink are node not normal tuple
     count = 0 # keep track when we insert the node
     #for priorityque, element is removed in a sorted order. here by scores
     open_q = PriorityQueue() # store the nodes we are going to explore
@@ -20,7 +20,7 @@ def a_star(draw, grid, source, sink):
     g_n[source] = 0
 
     f_n = {node:float("inf") for row in grid for node in row}
-    f_n[source] = h(source, sink)
+    f_n[source] = h(source.get_pos(), sink.get_pos())
 
     open_set = {source} # keep track of nodes in the priority queue. 
     closed_set = set() # store visited node
@@ -31,7 +31,7 @@ def a_star(draw, grid, source, sink):
                 pygame.quit()
 
         curr_node = open_q.get()[2]
-        print("curr_node", curr_node)
+        print("curr_node", curr_node.get_pos())
         open_set.remove(curr_node)
         closed_set.add(curr_node)
 
@@ -42,8 +42,9 @@ def a_star(draw, grid, source, sink):
             source.mark_routed()
             return True
         
-        for nei in c.GRID[curr_node[0]][curr_node[1]].neighbours:
-            print("nei", nei)
+        
+        for nei in curr_node.neighbours:
+            print("nei", nei.get_pos())
             if nei in closed_set:
                 continue #slip if we have visited this 
             tmp_g_n = g_n[curr_node] + 1
