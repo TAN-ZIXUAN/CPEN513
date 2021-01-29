@@ -27,9 +27,11 @@ SIZE_X = 0
 SIZE_Y = 0
 GRID = []
 
-OBS = []
-
+OBS = set()
+SOURCES = set()
+SINKS = set()
 WIRE2SOURCE = {}
 WIRE2NUM_PINS = {}
 WIRE2SINK = collections.defaultdict(list)
+SOURCE2SINKS = collections.defaultdict(list)
 PIN2WIRE = {} # key: coor of pin, value: (isSource, wireNumber) isSource0: source, 1 sink
