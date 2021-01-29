@@ -27,9 +27,9 @@ SIZE_X = 0
 SIZE_Y = 0
 GRID = []
 
-OBS = set()
-SOURCES = set()
-SINKS = set()
+OBS = []
+SOURCES = []
+SINKS = []
 WIRE2SOURCE = {}
 WIRE2NUM_PINS = {}
 WIRE2SINK = collections.defaultdict(list)

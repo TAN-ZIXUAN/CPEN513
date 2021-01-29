@@ -5,7 +5,8 @@ from pygame_gui.windows import UIFileDialog
 from pygame_gui.core.utility import create_resource_path
 
 import config as c
-import functions as f
+from functions import *
+import algorithms as alg
 
 class App:
     def __init__(self):
@@ -69,7 +70,7 @@ class App:
                             self.loaded_file.append((line.strip().split())) # [['40', '20'], ['101'], ['25', '1'], ['26', '1'], ['27', '1']
 
                     # parse file
-                    f.parse_file(self.loaded_file)
+                    parse_file(self.loaded_file)
                 if (event.type == pygame.USEREVENT and
                     event.user_type == pygame_gui.UI_WINDOW_CLOSE and
                     event.ui_element == self.file_dialog and
@@ -81,15 +82,20 @@ class App:
 
                 self.ui_manager.process_events(event)
                 # create grid (matrix made by node)
-            c.GRID = f.create_grid(c.NUM_X, c.NUM_Y)
+            c.GRID = create_grid(c.NUM_X, c.NUM_Y)
             # update grid colour based on loaed file
-            f.update_grid_colour(c.GRID)
+            update_grid_colour(c.GRID)
             self.ui_manager.update(time_delta)
             self.window_surface.blit(self.background, (0, 0))
             self.ui_manager.draw_ui(self.window_surface)
             # draw maze
-            f.paint_nodes(self.subsurface, c.GRID)
-            f.draw_grid(self.subsurface, c.NUM_X, c.SIZE_X) # draw nodes first bc node will cover the grid the boarderlines
+            if self.loaded_file:
+                # print("sources", c.SOURCES)
+                paint_nodes(self.subsurface, c.GRID)
+                draw_grid(self.subsurface, c.NUM_X, c.SIZE_X) # draw nodes first bc node will cover the grid the boarderlines
+                source= c.SOURCES[0]
+                # draw = lamda: draw(self.subsurface, c.GRID, c.NUM_X, c.SIZE_X)
+                alg.a_star(lambda:draw(self.subsurface, c.GRID, c.NUM_X, c.SIZE_X), c.GRID, source, c.SOURCE2SINKS[source][0])
 
             pygame.display.update()
 

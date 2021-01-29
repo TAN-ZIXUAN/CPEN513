@@ -16,7 +16,7 @@ def parse_file(file): #example file  # [['40', '20'], ['101'], ['25', '1'], ['26
     c.NUM_OBS = file[1][0]
 
     for i in range(c.NUM_OBS):
-        c.OBS.add((file[2 + i][0], file[2 + i][1]))
+        c.OBS.append((file[2 + i][0], file[2 + i][1]))
     
     c.NUM_WIRE = file[2 + c.NUM_OBS][0]
 
@@ -24,15 +24,15 @@ def parse_file(file): #example file  # [['40', '20'], ['101'], ['25', '1'], ['26
         source = (file[2 + c.NUM_OBS + 1 + i][1], file[2 + c.NUM_OBS + 1 + i][2])
         c.WIRE2SOURCE[i] = source
         c.WIRE2NUM_PINS[i] = file[2 + c.NUM_OBS + 1 + i][0]
-        c.SOURCES.add(c.WIRE2SOURCE[i])
-        print("sources", c.SOURCES)
+        c.SOURCES.append(c.WIRE2SOURCE[i])
+        # print("sources", c.SOURCES)
 
         tmp = 0
         for j in range(c.WIRE2NUM_PINS[i] - 1):
             sink = (file[2 + c.NUM_OBS + 1 + i][3 + j + tmp], file[2 + c.NUM_OBS + 1 + i][4 + j + tmp])
             c.SOURCE2SINKS[source].append(sink)
             c.WIRE2SINK[i].append(sink)
-            c.SINKS.add(sink)
+            c.SINKS.append(sink)
             tmp += 1
     # print("sources", c.SOURCES) #{(4, 2), (29, 10), (24, 4), (3, 5)}
     # print("wire2sink", c.WIRE2SINK) # {0: [(24, 2), (24, 11)], 1: [(24, 9), (5, 5)], 2: [(29, 3)], 3: [(34, 8)]})
@@ -65,6 +65,12 @@ def paint_nodes(surface, grid):
             rect = (node.coor_x, node.coor_y, c.SIZE_X, c.SIZE_Y)
             pygame.draw.rect(surface, node.colour, rect)
 
+def draw(surface, grid, num_x, size_x): # combination of draw_grid and paint_nodes
+    paint_nodes(surface, grid)
+    draw_grid(surface, num_x, size_x)
+
+
+
 def update_grid_colour(grid): # update grid color: source sink and obstacles
     for x, y in c.OBS:
         c.GRID[x][y].colour = c.BLACK
@@ -86,7 +92,8 @@ def h(p1, p2):
 def backtracing(pre, curr, draw):
 	while curr in pre:
 		curr = pre[curr]
-		curr.make_path()
+		curr.mark_path()
+
 		draw()
 # algorithm
 

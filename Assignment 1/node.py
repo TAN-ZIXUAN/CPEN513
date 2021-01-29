@@ -38,7 +38,10 @@ class Node:
     
     
     # def is_routed check whether is in the path
-
+    def mark_tmp_path(self):   # change the node color when we are exlopring
+        self.colour = c.GREEN
+    def mark_path(self):
+        self.colour = c.ORANGE # mark successful path
     def mark_routed(self):
         self.type = "r"
 
@@ -55,6 +58,19 @@ class Node:
         if self.col > 0 and c.GRID[self.row][self.col - 1].can_pass(): # LEFT
             self.neighbours.append(c.GRID[self.row][self.col - 1])
 
+
+    def get_neighbours(self): # get valid neighbour for curr_node
+        self.neighbours = [] # valid neighbours: sink or empty node
+
+        if self.row < c.NUM_X - 1 and c.GRID[self.row + 1][self.col].can_pass(): # DOWN
+            self.neighbours.append((self.row + 1, self.col))
+        if self.row > 0 and c.GRID[self.row - 1][self.col].can_pass(): # UP
+            self.neighbours.append((self.row - 1, self.col))
+        if self.col <  c.NUM_X - 1 and c.GRID[self.row][self.col + 1].can_pass(): # RIGHT
+            self.neighbours.append((self.row, self.col + 1))
+
+        if self.col > 0 and c.GRID[self.row][self.col - 1].can_pass(): # LEFT
+            self.neighbours.append((self.row, self.col - 1))
 
 
 
