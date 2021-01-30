@@ -17,6 +17,9 @@ class Node:
         # sink: sink
         # r: routed sink/source
         self.type = "e"
+        self.is_valid = True # can or can not route on it
+
+        # we set is_valid by a pair of source and sinks. only sinks and other empty grid is available
 
     def is_pin(self):
         return self.is_source() or self.is_sink()
@@ -44,6 +47,12 @@ class Node:
         self.colour = c.ORANGE # mark successful path
     def mark_routed(self):
         self.type = "r"
+    def mark_curr_routing(self): # mark the source we are routing with
+        self.colour = c.PURPLE
+    
+
+    # def mark_search_path(self): # mark the path we have explored
+    #     self.colour = ""
 
     def get_neighbours(self, src): # get valid neighbour for curr_node
         self.neighbours = [] # valid neighbours: sink or empty node
@@ -57,6 +66,10 @@ class Node:
 
         if self.col > 0 and c.GRID[self.row][self.col - 1].can_pass(src): # LEFT
             self.neighbours.append(c.GRID[self.row][self.col - 1])
+
+
+
+
 
 
     

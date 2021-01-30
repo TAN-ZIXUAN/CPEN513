@@ -74,14 +74,18 @@ def draw(surface, grid, num_x, size_x): # combination of draw_grid and paint_nod
 def update_grid_colour(grid): # update grid color: source sink and obstacles
     for x, y in c.OBS:
         c.GRID[x][y].colour = c.BLACK
+        c.GRID[x][y].is_valid = False
+        c.GRID[x][y].type = "o"
     for wire in c.WIRE2SOURCE:
         src_x, src_y = c.WIRE2SOURCE[wire]
+        c.GRID[src_x][src_y].type = "src"
         color_tmp = 50+wire*30
         while color_tmp > 255:
             color_tmp -= 40
         c.GRID[src_x][src_y].colour = (color_tmp, 100, 60)
 
         for sink_x, sink_y in c.WIRE2SINK[wire]:
+            c.GRID[sink_x][sink_y].type = "sink"
             c.GRID[sink_x][sink_y].colour = (color_tmp, 100, 60)
 
 

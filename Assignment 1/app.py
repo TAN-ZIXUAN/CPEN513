@@ -41,7 +41,7 @@ class App:
 
     def run(self):
         while self.is_running:
-            time_delta = self.clock.tick(60) / 1000.0
+            time_delta = self.clock.tick(60) / 100.0
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.is_running = False
@@ -93,12 +93,14 @@ class App:
                 # print("sources", c.SOURCES)
                 paint_nodes(self.subsurface, c.GRID)
                 draw_grid(self.subsurface, c.NUM_X, c.SIZE_X) # draw nodes first bc node will cover the grid the boarderlines
+                pygame.display.flip()
                 source= c.SOURCES[0]
                 # draw = lamda: draw(self.subsurface, c.GRID, c.NUM_X, c.SIZE_X)
                 source_node = c.GRID[source[0]][source[1]]
                 sink = c.SOURCE2SINKS[source][0]
                 sink_node = c.GRID[sink[0]][sink[1]]
                 alg.a_star(lambda:draw(self.subsurface, c.GRID, c.NUM_X, c.SIZE_X), c.GRID, source_node, sink_node )
+                # self.is_running = False
 
             pygame.display.update()
 
@@ -108,4 +110,4 @@ if __name__ == "__main__":
     app = App()
 
     app.run()
-    pygame.qui()
+    # pygame.quit()
