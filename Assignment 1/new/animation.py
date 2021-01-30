@@ -9,7 +9,7 @@ import config as c
 from functions import *
 from routing import *
 
-default_file = "kuma.infile"
+default_file = "rusty.infile"
 if len(sys.argv) < 2: # not parsing file argument. use default file
     print("default file loaded", "kuma.infile")
     print("please put file path as first argument")
@@ -27,14 +27,14 @@ colorGrid = c.COLOR_GRID
 
 # Initialize figure, imshow object, and axis.
 fig = plt.figure()
+# fig.set_size_inches(5* 2400.0/float(c.WIDTH),5* 1220.0/float(c.HEIGHT))
 gridPlot = plt.imshow(colorGrid, interpolation='nearest')
 ax = gridPlot._axes
 ax.grid(visible=True, ls='solid', color='k', lw=1.5)
+# plt.gca().set_aspect("equal") # forced the  grid shape to square
 ax.set_xticklabels([])
 ax.set_yticklabels([])
 
-# Initialize text annotations to display obstacle probability, rows, cols.
-# obstText = ax.annotate('', (0.15, 0.01), xycoords='figure fraction')
 colText = ax.annotate('', (0.15, 0.04), xycoords='figure fraction')
 rowText = ax.annotate('', (0.15, 0.07), xycoords='figure fraction')
 
@@ -53,13 +53,13 @@ def update_annotations(rows, cols, obstProb):
     rowText.set_text('Columns: {:d}'.format(cols))
 
 
-set_axis_properties(c.NUM_WIRE, c.NUM_Y)
+set_axis_properties(c.NUM_X, c.NUM_Y)
 # update_annotations(c.NUM_WIRE, c.NUM_Y, obstProb)
 
 
 def init_anim():
     '''Plot grid in its initial state by resetting "grid".'''
-    grid = generate_grid(grid)
+    grid = generate_grid(c.NUM_X, c.NUM_Y)
     colorGrid = color_grid(grid)
     gridPlot.set_data(colorGrid)
 
@@ -68,15 +68,15 @@ def update_anim(dummyFrameArgument):
         by the generator--this function simply passes "grid" to
         the color_grid() function to get an image array).
     '''
-    colorGrid = color_grid(grid)
+    colorGrid = color_grid(c.GRID)
     gridPlot.set_data(colorGrid)
 
-src = c.SOURCES.pop()
+src = c.WIRE2SOURCE[0]
 
 # Create animation object. Supply generator function to frames.
 ani = animation.FuncAnimation(fig, update_anim,
     init_func=init_anim, frames=route(c.GRID, src),
-    repeat=True, interval=150)
+    repeat=False, interval=200)
 
 # Turn on interactive plotting and show figure.
 plt.ion()

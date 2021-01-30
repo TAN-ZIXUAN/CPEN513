@@ -26,13 +26,14 @@ T_SINK_ROUTED = -10 # SINK ROUTED
 T_UNVIS = -2
 T_OBS = -3 # obstacle
 T_PATH = -4
+T_VISITED = -5
 # T_SOURCE_ROUTED = -10 # SINK ROUTED 
 
 # color
-COLOR_OBS = BLACK
-COLOR_UNVIS = np.array([1, 1, 1])
-COLOR_VIS = np.array([0, 0.5, 1])
-COLOR_PATH = np.array([1, 1, 0])
+COLOR_OBS = GREY
+COLOR_UNVIS = WHITE
+COLOR_VIS = GREEN
+COLOR_PATH = PURPLE
 
 
 NUM_X = 0
@@ -44,9 +45,9 @@ SIZE_Y = 0
 GRID = []
 COLOR_GRID = []
 
-OBS = set()
-SOURCES = set()
-SINKS = set()
+OBS = []
+SOURCES = []
+SINKS = []
 WIRE2SOURCE = {}
 WIRE2NUM_PINS = {}
 WIRE2SINK = collections.defaultdict(list)

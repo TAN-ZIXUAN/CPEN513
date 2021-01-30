@@ -30,18 +30,23 @@ def update_nei(grid, row, col, src): # check neighbors
 
     if col > 0 and can_explore(grid, row, col - 1, src): # LEFT
         neighbors.append((row, col - 1))
+    return neighbors
 
-def backtracing(grid,curr2pre, curr, draw):
+def backtracing(grid,curr2pre, curr):
+    step = 0
     while curr in curr2pre:
         grid[curr[0]][curr[1]] = c.T_PATH
         curr = curr2pre[curr]
+        step += 1
+    return step
 
 def route(grid, src):
     print("routing from source:", src)
-    def route_generator():
-        
-        count = 0
-        q = deque(src)
+    def route_generator(): 
+        founded = False
+        # count = 0
+        q = deque()
+        q.append(src)
         curr2pre = {}
         # initial cost
         (rows, cols) = grid.shape
@@ -53,25 +58,54 @@ def route(grid, src):
 
         while q:
             curr = q.popleft()
+            print("curr", curr)
             # find path to a sink
-            if curr in c.SOURCE2SINKS[src] and grid[nei[0]][nei[1]] != c.T_SINK_ROUTED: 
-                grid[nei[0]][nei[1]] = c.T_SINK_ROUTED
-                backtracing(grid, curr2pre, curr)
-                 
-                print("routed: " + src + " to " + sink)
-                
-                yield
+            
             # exploaring and update cost
-            for nei in update_nei(grid, curr[0], curr[1]):
+            neighbors = update_nei(grid, curr[0], curr[1], src)
+            # for nei in neighbors:
+            #     grid[nei[0]][nei[1]] = c.T_VISITED
+
+            print(neighbors)
+            for nei in neighbors:
+                grid[nei[0]][nei[1]] = c.T_VISITED
+                
+                if nei in c.SOURCE2SINKS[src] and grid[curr[0]][curr[1]] != c.T_SINK_ROUTED: 
+                    step = backtracing(grid, curr2pre, curr)
+                    grid[nei[0]][nei[1]] = c.T_SINK_ROUTED
+                    
+                    
+                    print("routed:")
+                    print("src", src)
+                    print("sink", curr)
+                    print("path", curr2pre)
+                    print("step", step)
+                    founded = True
+                    break
+
                 tmp_cost = cost[curr] + 1
 
                 if tmp_cost < cost[nei]:
                     curr2pre[nei] = curr
+                    
                     cost[nei] = tmp_cost
                     if nei not in q:
                         q.append(nei)
+                        # grid[nei[0]][nei[1]] =c.T_PATH
 
-                        yield
+            yield
+            if founded: # has to unfolded backtracing to show path in frame
+                step = 0
+                while curr in curr2pre:
+                    grid[curr[0]][curr[1]] = c.T_PATH
+                    curr = curr2pre[curr]
+                    step += 1
+                    yield
+
+                return
+    
+    return route_generator
+
 
 
 

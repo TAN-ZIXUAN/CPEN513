@@ -21,6 +21,7 @@ def color_grid(grid): # return a grid consit of colors (also call this to update
     (rows, cols) = grid.shape
     
     colorGrid = np.full((rows, cols, 3), c.COLOR_UNVIS)
+
     # print("orig", colorGrid)
     for row, col in c.OBS:
         colorGrid[row][col] = c.COLOR_OBS
@@ -29,8 +30,11 @@ def color_grid(grid): # return a grid consit of colors (also call this to update
     for i in range(rows):
         for j in range(cols): 
             # visited cell
-            if grid[i][j] > c.T_SOURCE:
+            if grid[i][j] > c.T_SOURCE :
+                # if not( (i, j) in c.SINKS) and not( (i, j) in c.SOURCES):
                 colorGrid[i][j] = c.COLOR_VIS
+                    
+                #   colorGrid[i][j] = c.COLOR_VIS
 
             # path cell
             elif grid[i][j] == c.T_PATH:
@@ -39,15 +43,36 @@ def color_grid(grid): # return a grid consit of colors (also call this to update
 
 
     # for each group of source ans sinks
-    for wire in c.WIRE2SOURCE:
-        src_x, src_y = c.WIRE2SOURCE[wire]
-        color_tmp = 50+wire*30
+    for (src_x, src_y) in c.SOURCES:
+        wire = c.PIN2WIRE[(src_x, src_y)]
+        color_tmp = 50+wire*60
         while color_tmp > 255:
             color_tmp -= 40
-            colorGrid[src_x][src_y] = (color_tmp, 100, 60)
-
+        colorGrid[src_x][src_y] = (color_tmp, 100, 60)
+        # print(src_x, src_y)
+        # print((color_tmp, 100, 60))
         for sink_x, sink_y in c.WIRE2SINK[wire]:
             colorGrid[sink_x][sink_y] = (color_tmp, 100, 60)
+    
+
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == c.T_VISITED:
+                colorGrid[i][j] = c.COLOR_VIS
+
+
+    # for wire in c.WIRE2SOURCE:
+    #     (src_x, src_y) = c.WIRE2SOURCE[wire]
+
+    #     color_tmp = 50+wire*60
+    #     while color_tmp > 255:
+    #         color_tmp -= 40
+    #         colorGrid[src_x][src_y] = (color_tmp, 100, 60)
+    #         print(src_x, src_y)
+    #         print((color_tmp, 100, 60))
+
+    #     for sink_x, sink_y in c.WIRE2SINK[wire]:
+    #         colorGrid[sink_x][sink_y] = (color_tmp, 100, 60)
 
     return colorGrid
 
@@ -72,7 +97,7 @@ def parse_file(file_path): #example file  # [['40', '20'], ['101'], ['25', '1'],
     c.NUM_OBS = file[1][0]
 
     for i in range(c.NUM_OBS):
-        c.OBS.add((file[2 + i][0], file[2 + i][1]))
+        c.OBS.append((file[2 + i][0], file[2 + i][1]))
 
     c.NUM_WIRE = file[2 + c.NUM_OBS][0]
 
@@ -80,7 +105,7 @@ def parse_file(file_path): #example file  # [['40', '20'], ['101'], ['25', '1'],
         source = (file[2 + c.NUM_OBS + 1 + i][1], file[2 + c.NUM_OBS + 1 + i][2])
         c.WIRE2SOURCE[i] = source
         c.WIRE2NUM_PINS[i] = file[2 + c.NUM_OBS + 1 + i][0]
-        c.SOURCES.add(c.WIRE2SOURCE[i])
+        c.SOURCES.append(c.WIRE2SOURCE[i])
         # print("sources", c.SOURCES)
         c.PIN2WIRE[(source)] = i
 
@@ -89,7 +114,7 @@ def parse_file(file_path): #example file  # [['40', '20'], ['101'], ['25', '1'],
             sink = (file[2 + c.NUM_OBS + 1 + i][3 + j + tmp], file[2 + c.NUM_OBS + 1 + i][4 + j + tmp])
             c.SOURCE2SINKS[source].append(sink)
             c.WIRE2SINK[i].append(sink)
-            c.SINKS.add(sink)
+            c.SINKS.append(sink)
             c.PIN2WIRE[(sink)] = i
             tmp += 1
 
