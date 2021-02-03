@@ -1,9 +1,12 @@
+"""
+stores some global variabels and constants
+"""
 import collections
 import numpy as np
 WIDTH = 1500
 HEIGHT = 750
 
-
+PATH_ARR = []
 #colors
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -32,12 +35,12 @@ T_VISITED = -5
 # color
 COLOR_OBS = GREY
 COLOR_UNVIS = WHITE
-COLOR_VIS = GREEN
+COLOR_VIS = (125, 126, 176)
 COLOR_PATH = PURPLE
 
 
-NUM_X = 0
-NUM_Y = 0
+ROWS = 0
+COLS = 0
 NUM_WIRE = 0
 NUM_OBS = 0
 SIZE_X = 0

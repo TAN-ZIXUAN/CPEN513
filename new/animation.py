@@ -75,7 +75,7 @@ src = c.WIRE2SOURCE[0]
 
 # Create animation object. Supply generator function to frames.
 ani = animation.FuncAnimation(fig, update_anim,
-    init_func=init_anim, frames=route(c.GRID, src),
+    init_func=init_anim, frames=route_wire(c.GRID, 0),
     repeat=False, interval=200)
 
 # Turn on interactive plotting and show figure.
