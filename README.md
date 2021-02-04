@@ -50,12 +50,10 @@ python -m pytest route_test.py
 
 1. example
    ![example](README.assets/example.png)
-
    ![example](README.assets/example.gif)
 
 2. impossible
    ![impossible](README.assets/impossible.png)
-
    ![impossible](README.assets/impossible-1612438509268.gif)
 
    
