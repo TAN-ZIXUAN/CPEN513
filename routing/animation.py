@@ -180,9 +180,15 @@ def update_anim(dummyFrameArgument):
 # Create animation object. Supply generator function to frames.
 ani = animation.FuncAnimation(fig, update_anim,
     init_func=init_anim, frames=route_with_shuffle(100),
-    repeat=False, interval=100, save_count=2000)
-ani.save('gif/'+filename +".gif", writer='pillow') # comment this if you want the animation programme runs realtime
-print("gif generated")
+    repeat=False, interval=100)
+
+
+# ani = animation.FuncAnimation(fig, update_anim,
+#     init_func=init_anim, frames=route_with_shuffle(100),
+#     repeat=False, interval=100, save_count=2000)
+#save_count for saving more frames but it will stops the programme early. so remove it if no need for saving gif
+# ani.save('gif/'+filename +".gif", writer='pillow') # comment this if you want the animation programme runs realtime
+# print("gif generated")
 
 # Turn on interactive plotting and show figure.
 plt.ion()
