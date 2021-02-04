@@ -8,7 +8,7 @@ import config as c
 from itertools import permutations 
 
 layout = Layout()
-middle_frames = False # true: contain frames showing routing process
+middle_frames = True # true: contain frames showing routing process
 def reload_layout(filepath):
     """Parse a netlist and populate the layout.grid.
 

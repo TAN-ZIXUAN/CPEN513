@@ -433,9 +433,9 @@ for i in range(len(file_name)):
     test.append(("benchmarks/" + file_name[i], expected[i]))
 print(test)
 
-# @pytest.mark.parametrize("test_input, expected", test)
-# def test_route_all(test_input, expected):
-#   assert route_all_at_file(test_input) == expected
+@pytest.mark.parametrize("test_input, expected", test)
+def test_route_all(test_input, expected):
+  assert route_all_at_file(test_input) == expected
 
 
 @pytest.mark.parametrize("test_input, expected", test)

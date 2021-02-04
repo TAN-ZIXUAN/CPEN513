@@ -15,7 +15,7 @@ import config as c
 # from functions import *
 from route import *
 filename = "temp"
-default_file = "benchmarks/" + filename + ".infile"
+default_file = "routing/benchmarks/" + filename + ".infile"
 
 def parse_file(filepath):
     """Parse a netlist and populate the layout.grid.
@@ -181,7 +181,7 @@ def update_anim(dummyFrameArgument):
 ani = animation.FuncAnimation(fig, update_anim,
     init_func=init_anim, frames=route_with_shuffle(10),
     repeat=False, interval=100, save_count=200)
-# ani.save('gif/'+filename +".gif", writer='pillow')
+ani.save('routing/gif/'+filename +".gif", writer='pillow')
 print("gif generated")
 
 # Turn on interactive plotting and show figure.
