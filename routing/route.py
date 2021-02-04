@@ -8,7 +8,7 @@ import config as c
 from itertools import permutations 
 
 layout = Layout()
-middle_frames = True # true: contain frames showing routing process
+middle_frames = False # true: contain frames showing routing process
 def reload_layout(filepath):
     """Parse a netlist and populate the layout.grid.
 
@@ -257,9 +257,10 @@ def route_a_star(start, target):
 
     yield True
 
-def route_with_shuffle(trial_time):
+def route_with_shuffle(trial_time = 10):
     max_routed_net_count = 0
     routed_net_count = 0
+    max_routed_net_count = 0
     i = 0
     # final_routing = None # store the routing result when max_routed_net_count
     while i < trial_time and routed_net_count < len(layout.netlist):
@@ -288,7 +289,7 @@ def route_with_shuffle(trial_time):
         layout.reset_grid()
         reload_layout(c.FILEPATH) # ugly way to reload the whole layout but works
         i += 1
-    print("routed: {}/{}".format(routed_net_count, len(layout.netlist)))
+    print("routed: {}/{}".format(max_routed_net_count, len(layout.netlist)))
 
 
 
@@ -299,14 +300,18 @@ def route_all():
     """
     layout.sort_netlist()
     routed_net_count = 0
+    # routed_segment = 0
     for net in layout.netlist:
         print("-----------------routing net {} -----------------".format(net.net_num))
         net.sort_sinks()
 
         yield from route_LeeMoore(net.src)
 
-        if(len(net.sinks) > 1):
+        if(len(net.sinks) <= 1):
+            yield from route_a_star(net.src, net.sinks[0])
             # print("routing from sinks of net {}".format(net.net_num))
+        else:
+            yield from route_LeeMoore(net.src)
             for sink in net.sinks:
                 if sink.is_sink_used():
                     # print("{} conneted. skip to next sink".format(sink))
@@ -318,6 +323,8 @@ def route_all():
     print("routed: {}/{}".format(routed_net_count, len(layout.netlist)))
 
 # use permutation instead
+
+## does not work well.
 def route_with_permutation(timeout = float("inf")): # if parsing timeout, force it exit if routing too many time. 
     max_routed_net_count = 0
     perm_netlist = permutations(layout.netlist)

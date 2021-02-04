@@ -14,10 +14,10 @@ from net import Net
 import config as c
 # from functions import *
 from route import *
-filename = "kuma"
+filename = "temp"
 default_file = "benchmarks/" + filename + ".infile"
 
-def parse_netlist(filepath):
+def parse_file(filepath):
     """Parse a netlist and populate the layout.grid.
     
     filepath - the full path of the netlist file to parse"""
@@ -124,7 +124,7 @@ if not file_path:
     print("no file selected!") 
     sys.exit()
 c.FILEPATH = file_path
-parse_netlist(file_path)
+parse_file(file_path)
 
 fig = plt.figure()
 # fig.set_size_inches(5* 2400.0/float(c.WIDTH),5* 1220.0/float(c.HEIGHT))
@@ -176,12 +176,12 @@ def update_anim(dummyFrameArgument):
     gridPlot.set_data(colorGrid)
 
 
-
+# route_with_shuffle(10)
 # Create animation object. Supply generator function to frames.
 ani = animation.FuncAnimation(fig, update_anim,
-    init_func=init_anim, frames=route_all(),
+    init_func=init_anim, frames=route_with_shuffle(10),
     repeat=False, interval=100, save_count=200)
-ani.save('gif/'+filename +".gif", writer='pillow')
+# ani.save('gif/'+filename +".gif", writer='pillow')
 print("gif generated")
 
 # Turn on interactive plotting and show figure.
