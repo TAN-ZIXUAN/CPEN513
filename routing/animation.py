@@ -179,7 +179,7 @@ def update_anim(dummyFrameArgument):
 ani = animation.FuncAnimation(fig, update_anim,
     init_func=init_anim, frames=route_with_shuffle(15),
     repeat=False, interval=100)
-
+ani.save('gif/example.gif', writer='pllow')
 # Turn on interactive plotting and show figure.
 plt.ion()
 plt.show(block=True)
