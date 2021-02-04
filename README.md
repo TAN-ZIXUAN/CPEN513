@@ -1,7 +1,5 @@
 # CPEN513 A1 Routing
 
-[TOC]
-
 ## Run the program
 
 run the animation.py
