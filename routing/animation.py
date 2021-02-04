@@ -14,8 +14,8 @@ from net import Net
 import config as c
 # from functions import *
 from route import *
-filename = "temp"
-default_file = "routing/benchmarks/" + filename + ".infile"
+filename = "stdcell"
+default_file = "benchmarks/" + filename + ".infile"
 
 def parse_file(filepath):
     """Parse a netlist and populate the layout.grid.
@@ -179,9 +179,9 @@ def update_anim(dummyFrameArgument):
 # route_with_shuffle(10)
 # Create animation object. Supply generator function to frames.
 ani = animation.FuncAnimation(fig, update_anim,
-    init_func=init_anim, frames=route_with_shuffle(10),
-    repeat=False, interval=100, save_count=200)
-ani.save('routing/gif/'+filename +".gif", writer='pillow')
+    init_func=init_anim, frames=route_with_shuffle(100),
+    repeat=False, interval=100, save_count=2000)
+ani.save('gif/'+filename +".gif", writer='pillow') # comment this if you want the animation programme runs realtime
 print("gif generated")
 
 # Turn on interactive plotting and show figure.

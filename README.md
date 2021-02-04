@@ -5,6 +5,7 @@
 run the animation.py
 
 ```
+cd routing
 python animation
 ```
 

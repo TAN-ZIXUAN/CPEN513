@@ -421,7 +421,7 @@ def route_all_at_file(file_path):
 
 def route_shuffle_at_file(file_path):
     load_file(file_path)
-    trial_time = 100
+    trial_time = 500
     return route_with_shuffle(trial_time,file_path)
 
 def route_permutation_at_file(file_path):
@@ -433,9 +433,9 @@ for i in range(len(file_name)):
     test.append(("benchmarks/" + file_name[i], expected[i]))
 print(test)
 
-@pytest.mark.parametrize("test_input, expected", test)
-def test_route_all(test_input, expected):
-  assert route_all_at_file(test_input) == expected
+# @pytest.mark.parametrize("test_input, expected", test)
+# def test_route_all(test_input, expected):
+#   assert route_all_at_file(test_input) == expected
 
 
 @pytest.mark.parametrize("test_input, expected", test)
