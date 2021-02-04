@@ -4,19 +4,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import sys
-import matplotlib as mpl 
-# mpl.rcParams['animation.ffmpeg_path'] = r"C:\Users\Tan\Downloads\ffmpeg-4.3.2-2021-02-02-full_build\bin"
 
 from layout import Layout
 from cell import Cell
 from net import Net
 
 import config as c
-# from functions import *
 from route import *
-filename = "kuma"
-default_file = "benchmarks/" + filename + ".infile"
+layout = Layout()
 
+# global filename
+filename = "stdcell.infile"
+default_file = "benchmarks/" + filename
 def parse_netlist(filepath):
     """Parse a netlist and populate the layout.grid.
     
@@ -24,7 +23,7 @@ def parse_netlist(filepath):
     with open(filepath, 'r') as f:
         # first line is grid size
         line = f.readline().strip().split()
-        # print(line[0])
+        print(line[0])
         cols = int(line[0])
         rows= int(line[1])
         c.ROWS = rows # col
@@ -147,7 +146,6 @@ def set_axis_properties(rows, cols):
 
 
 set_axis_properties(c.ROWS, c.COLS)
-# update_annotations(c.NUM_WIRE, c.NUM_Y, obstProb)
 
 
 def init_anim():
@@ -160,8 +158,10 @@ def init_anim():
     c.GRID = grid
     colorGrid = color_grid(grid)
     gridPlot.set_data(colorGrid)
+    
 
-def update_anim(dummyFrameArgument):
+
+def update_anim(save_count):
     '''Update plot based on values in "grid" ("grid" is updated
         by the generator--this function simply passes "grid" to
         the color_grid() function to get an image array).
@@ -175,14 +175,11 @@ def update_anim(dummyFrameArgument):
     colorGrid = color_grid(grid)
     gridPlot.set_data(colorGrid)
 
-
-
-# Create animation object. Supply generator function to frames.
 ani = animation.FuncAnimation(fig, update_anim,
     init_func=init_anim, frames=route_all(),
-    repeat=False, interval=100, save_count=200)
-ani.save('gif/'+filename +".gif", writer='pillow')
-print("gif generated")
+    repeat=False, interval=100)
+
+# ani.save('gif/example.gif', writer='pllow')
 
 # Turn on interactive plotting and show figure.
 plt.ion()
