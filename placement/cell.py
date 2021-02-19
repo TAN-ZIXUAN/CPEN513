@@ -3,6 +3,7 @@ class Cell:
 
     Attributes:
     cell_id: id of the cell. starting from 0
+    corresponding_site: the site which cell is placed on
     row: row number of the cell
     col: col number of the cell
     nets: list of nets that the cell are in
@@ -10,9 +11,11 @@ class Cell:
     """
     def __init__(self, cell_id):
         self.cell_id = cell_id
+        self.corresponding_site = None
         self.row = None
         self.col = None
         self.nets = []
+        
 
     def __str__(self):
         return 'cell {cell_id} ({row}, {col})'.format(cell_id=self.cell_id, row=self.row, col=self.col)

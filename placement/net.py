@@ -40,7 +40,7 @@ class Net:
 
         logging.info("[net.py] sorted cells by row number {}".format(cells_sorted_by_row))
         logging.info("[net.py] min_row {}, max_row {}".format(min_row, max_row))
-        print("min_row {}, max_row {}".format(min_row, max_row))
+        # print("min_row {}, max_row {}".format(min_row, max_row))
 
         # col
         cells_sorted_by_col = sorted(self.cells, key=operator.attrgetter('col'))    # sort cells by col number
@@ -51,7 +51,7 @@ class Net:
 
         logging.info("[net.py] sorted cells by col number {}".format(cells_sorted_by_col))
         logging.info("[net.py] min_col {}, max_col {}".format(min_col, max_col))
-        print("min_col {}, max_col {}".format(min_col, max_col))
+        # print("min_col {}, max_col {}".format(min_col, max_col))
 
         # calculate half perimeter
         half_perimeter = (max_row - min_row) + (max_col - min_col)

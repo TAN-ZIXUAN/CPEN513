@@ -6,7 +6,7 @@ import matplotlib.colors as mcolors
 # print(len(color_list))
 # print(color_list)
 # print(len(css_color))
-hex_color = []
+hex_colors = []
 
 color_file = "hex_color.txt"
 with open(color_file, 'r') as f:
@@ -16,5 +16,5 @@ with open(color_file, 'r') as f:
         hex_color.append(l[-1])
 
 
-print(len(hex_color))
-print(hex_color)
+# print(len(hex_colors))
+# print(hex_colors)
