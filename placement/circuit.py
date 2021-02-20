@@ -71,7 +71,7 @@ class Circuit:
         cost = 0
         for net in self.netlist:
             cost += net.calc_half_perimeter()
-        self.total_cost = cost
+        # self.total_cost = cost
         return cost
 
     def get_site_by_id(self, site_id):

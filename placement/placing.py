@@ -17,7 +17,13 @@ def init_canvas():
     canvas.delete(ALL)
 
     # size of site
-    rdim = 50
+    rdim = 20
+    if circuit.num_cols < 25:
+        rdim = 50
+    elif circuit.num_cols <50:
+        rdim = 20
+    else:
+        rdim = 10
     rh = rw = rdim
     xoffset = rdim // 5
     yoffset = rdim // 5
@@ -46,7 +52,7 @@ def canvas_draw_nets():
         x1, y1 = src.corresponding_site.get_rect_center(canvas)
         for sink in net.cells[1:]:
             x2, y2 = sink.corresponding_site.get_rect_center(canvas)
-            canvas.create_line(x1, y1, x2, y2, fill=net.color, tags='ratsnest')
+            canvas.create_line(x1, y1, x2, y2, fill=net.color, tags='nets')
 
 
 
@@ -70,8 +76,7 @@ def load_file_button():
     init_canvas()
 
 def random_placement():
-    num_sites = circuit.num_rows * circuit.num_cols
-    random_sites_id_list = random.sample(range(num_sites), circuit.num_cells) # generate random (cell_id, site_id) list of size equals to num_sites
+    random_sites_id_list = random.sample(range(circuit.num_sites), circuit.num_cells) # generate random (cell_id, site_id) list of size equals to num_sites
     for cell_id, random_site_id in enumerate(random_sites_id_list):
         site = circuit.get_site_by_id(random_site_id)
         cell = circuit.cell_list[cell_id]
@@ -79,62 +84,37 @@ def random_placement():
         cell.row = site.row
         cell.col = site.col
         cell.corresponding_site = site
-        print(cell.__str__())
+        # print(cell.__str__())
 def init_place():
     random_placement()
-    circuit.calc_total_cost()
+    circuit.total_cost = circuit.calc_total_cost()
     update_canvas()
-    total_cost = circuit.calc_total_cost()
+    total_cost = circuit.total_cost
+    
     total_cost_text.set(total_cost)
     logging.info('initial total cost = {total_cost}'.format(total_cost=total_cost))
+    print("initial cost", total_cost)
     # enable the Anneal button
     anneal_btn.state(['!disabled'])
 
     # disable the Place button
     place_btn.state(['disabled'])
 
-def initial_temp(k=20, nmoves=10):
+def initial_temp(k=20, num_moves=50):
     """Return a good value to use for the initial temperature.
 
     Based on standard deviation of a number of random moves."""
 
-    costs = [0 for _ in range(nmoves)]  # a list of cost of those n random moves
-    for i in range(nmoves):
-        # randomly select two sites
-        site1, site2 = select_sites()
-        print(site1.__str__())
-
-        # calculate cost of move - only need to consider nets that
-        # contain the nodes we swapped
-        pre_swap_cost = 0
-        if not site1.is_empty():
-            cell1 = site1.element
-            pre_swap_cost += cell1.calc_nets_cost_with_cell()
-        if not site2.is_empty():
-            cell2 = site2.element
-            pre_swap_cost += cell2.calc_nets_cost_with_cell()
-        
-        swap_sites(site1, site2)
-
-        post_swap_cost = 0
-        if not site1.is_empty():
-            cell1 = site1.element
-            post_swap_cost += cell1.calc_nets_cost_with_cell()
-        if not site2.is_empty():
-            cell2 = site2.element
-            post_swap_cost += cell2.calc_nets_cost_with_cell()
-        print("pre cost",pre_swap_cost)
-        print("post cost",post_swap_cost)
-        delta_c = post_swap_cost - pre_swap_cost 
-        print("126 delta c", delta_c)
-        circuit.total_cost += delta_c
-        costs[i] = circuit.total_cost
+    costs = [0 for _ in range(num_moves)]  # a list of cost of those n random moves
+    for i in range(num_moves):
+        random_placement()
+        costs[i] = circuit.calc_total_cost()
     
-    print('costs of {} random moves:'.format(nmoves), costs)
+    # print('costs of {} random moves:'.format(num_moves), costs)
     stdev = stats.stdev(costs)
-    print('std_dev of {} random moves is'.format(nmoves), stdev)
-    initial_temp = k * stdev
-    return initial_temp
+    # print('std_dev of {} random moves is'.format(num_moves), stdev)
+    init_temp = k * stdev
+    return init_temp
 
 def get_new_temp(temp, accepted_costs):
     """Return the next annealing temperature.
@@ -159,13 +139,14 @@ def exit_condition(temp, accepted_costs):
     
     Based on standard deviation of the costs of accepted moves."""
     
-    print("exit_condition()")
-    stdev = stats.stdev(accepted_costs)
-    print('std_dev(accepted costs) =', stdev)
-    if stdev < 2:
-        return True
-    else:
-        return False
+    # print("exit_condition()")
+    # stdev = stats.stdev(accepted_costs)
+    # print('std_dev(accepted costs) =', stdev)
+    # if stdev < 2:
+    #     return True
+    # else:
+    #     return False
+    return temp < accepted_costs
 
 
 
@@ -181,7 +162,7 @@ def select_sites():
             continue
         else:
             break
-
+        
     return (site1, site2)
 
 
@@ -195,6 +176,7 @@ def swap_sites(site1, site2):
         site2.element.corresponding_site = site2
 
 def anneal():
+    # temp = initial_temp()
     temp = initial_temp()
     k = 10 # constant for num iterations at each temp
     niterations = int(k * (circuit.num_cells)**(4/3))
@@ -263,7 +245,8 @@ def anneal_outer(temp, niterations):
     anneal_inner(temp, niterations, accepted_costs)
 
     # reduce temp
-    temp = get_new_temp(temp, accepted_costs)
+    # temp = get_new_temp(temp, accepted_costs)
+    temp *= 0.95
 
     # redraw canvas
     update_canvas()
@@ -276,15 +259,151 @@ def anneal_outer(temp, niterations):
         root.after(1000, anneal_outer, temp, niterations)
     else:
         # exit condition met, do final steps
+        
         total_cost = circuit.calc_total_cost()
+        
         total_cost_text.set(total_cost)
         logging.info('final cost = {}'.format(total_cost))
         print('final cost = {}'.format(total_cost))
 
+def placing():
+    init_temp = initial_temp()
+    print('T0 =', init_temp)
+    num_iterations = 10
+    cooling_rate = 0.95
+    threshold = 50
+    circuit.grid = annealing(init_temp, num_iterations, cooling_rate, threshold)
+    update_canvas()
+    cost = circuit.calc_total_cost()
+    total_cost_text.set(cost)
+    # best_cost = min(best_cost, total_cost)
+    print('final cost = {}'.format(cost))
+    
+
+
+def annealing(initial_temp, num_iterations, cooling_rate, threshold):
+    # temp = initial_temp
+    T = initial_temp
+    # initial placement
+    # random_placement()
+    print("cost", circuit.calc_total_cost())
+    grid = circuit.grid
+
+    while(T > threshold):
+        for _ in range(num_iterations): # TODO: cost didn't change after swap site
+            site1, site2 = select_sites()
+            pre_swap_cost = 0
+            if not site1.is_empty():
+                cell1 = site1.element
+                pre_swap_cost += cell1.calc_nets_cost_with_cell()
+            if not site2.is_empty():
+                cell2 = site2.element
+                pre_swap_cost += cell2.calc_nets_cost_with_cell()
+
+            swap_sites(site1, site2)
+
+            post_swap_cost = 0
+            if not site1.is_empty():
+                cell1 = site1.element
+                post_swap_cost += cell1.calc_nets_cost_with_cell()
+            if not site2.is_empty():
+                cell2 = site2.element
+                post_swap_cost += cell2.calc_nets_cost_with_cell()
+
+            delta_c = post_swap_cost - pre_swap_cost 
+
+            r = random.random()
+            if r < math.exp(-delta_c / T):
+                circuit.total_cost += delta_c
+                print("inner cost", circuit.total_cost)
+                grid = circuit.grid
+            else:
+                # undo moves
+                print("negative, undo")
+                swap_sites(site2, site1)
+                grid = circuit.grid
+        T *= cooling_rate
+        cost = circuit.calc_total_cost()
+        total_cost_text.set(cost)
+        update_canvas()
+        # if delta_c  < 0:
+        #     if r < math.exp(-delta_c / T):
+        #         # undo moves
+        #         print("negative, undo")
+        #         swap_sites(site2, site1)
+        # else: # take moves
+        #     circuit.total_cost += delta_c
+        #     print("inner cost", circuit.total_cost)
+    return grid
+
+
+            
+            
+        
+    # T *= cooling_rate
+    # print("T", T)
+    # if T > threshold:
+    #     root.after(1000, annealing, T, num_iterations, cooling_rate, threshold)
+    #     update_canvas()
+    #     cost = circuit.calc_total_cost()
+    #     total_cost_text.set(cost)
+        
+
+    
+def annealing1():
+    # temp = initial_temp
+    temp = 200
+    # initial placement
+    random_placement()
+    print("initial cost", circuit.calc_total_cost())
+
+    while (temp > 100):
+        for _ in range(20):
+            site1, site2 = select_sites()
+            pre_swap_cost = 0
+            if not site1.is_empty():
+                cell1 = site1.element
+                pre_swap_cost += cell1.calc_nets_cost_with_cell()
+            if not site2.is_empty():
+                cell2 = site2.element
+                pre_swap_cost += cell2.calc_nets_cost_with_cell()
+
+            swap_sites(site1, site2)
+
+            post_swap_cost = 0
+            if not site1.is_empty():
+                cell1 = site1.element
+                post_swap_cost += cell1.calc_nets_cost_with_cell()
+            if not site2.is_empty():
+                cell2 = site2.element
+                post_swap_cost += cell2.calc_nets_cost_with_cell()
+
+            delta_c = post_swap_cost - pre_swap_cost 
+
+            r = random.random()
+            if r < math.exp(-delta_c / temp):
+                circuit.total_cost += delta_c
+            else:
+                # undo swap
+                swap_sites(site2, site1)
+            
+        temp *= 0.6
+        update_canvas()
+        root.after(1000, annealing)
+
+    cost = circuit.calc_total_cost()
+    total_cost_text.set(cost)
+    # best_cost = min(best_cost, total_cost)
+    print('final cost = {}'.format(cost))
+
+
+
+
+
 if __name__=='__main__':
     random.seed(0)
     logging.basicConfig(filename='placement_info_log.log', filemode='w',level=logging.INFO)
-    random.seed(0)
+    # best_cost = float("inf")
     # hex_colors = create_hex_color_list()
 
     circuit = Circuit()
@@ -319,7 +438,7 @@ if __name__=='__main__':
     place_btn = ttk.Button(btn_frame, text="init place", command=init_place)
     place_btn.grid(column=1, row=0, padx=5, pady=5)
     place_btn.state(['disabled'])
-    anneal_btn = ttk.Button(btn_frame, text="Anneal", command=anneal)
+    anneal_btn = ttk.Button(btn_frame, text="Anneal", command=placing)
     anneal_btn.grid(column=2, row=0, padx=5, pady=5)
     anneal_btn.state(['disabled'])
 
@@ -329,6 +448,12 @@ if __name__=='__main__':
     ttk.Label(stats_frame, text="cost:").grid(column=1, row=1)
     cost_lbl = ttk.Label(stats_frame, textvariable=total_cost_text)
     cost_lbl.grid(column=2, row=1)
+
+    # best_cost_text = StringVar()
+    # best_cost_text.set('-')
+    # ttk.Label(stats_frame, text="best cost:").grid(column=1, row=2)
+    # cost_lbl = ttk.Label(stats_frame, textvariable=best_cost_text)
+    # cost_lbl.grid(column=2, row=2)
 
     # run main event loop for gui
     root.mainloop()
