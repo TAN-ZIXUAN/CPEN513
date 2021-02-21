@@ -361,7 +361,7 @@ def annealing(initial_temp, num_iterations, cooling_rate, threshold):
                 grid = circuit.grid
             else:
                 # undo moves
-                print("negative, undo")
+                print("undo")
                 swap_sites(site2, site1)
                 grid = circuit.grid
         T *= cooling_rate
