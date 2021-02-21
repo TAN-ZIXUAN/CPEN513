@@ -14,7 +14,6 @@ class Site:
         self.row = row
         self.col = col
         self.element = None    # cell in the current site. None if it's empty
-        # self.text = None
         self.rect = None
     
     def is_empty(self):
@@ -27,21 +26,13 @@ class Site:
         else:
             return 'site ({row},{col}) occupided by cell_{cell_id}'.format(row=self.row, col=self.col, cell_id=self.element.cell_id)
 
-        
-    # def set_text(self, canvas, text=''):
-    #     if self.text == None:
-    #         x, y = self.get_rect_center(canvas)
-    #         self.text = canvas.create_text(x, y, text=text)
-    #     else:
-    #         canvas.itemconfigure(self.text, text=text)
-
     def update_rect(self, canvas):
         """Colour the rectangle according to content, set text to Node ID."""
         if self.is_empty():
             canvas.itemconfigure(self.rect, fill='white')
             #self.set_text('') # debugging: put ID label on each node
         else:
-            canvas.itemconfigure(self.rect, fill='grey')
+            canvas.itemconfigure(self.rect, fill='blue')
             #self.set_text(self.content.ID) # debug: put ID label on each node
 
     

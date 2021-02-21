@@ -6,13 +6,15 @@ class Net:
 
     Attributes:
     cells: contains the cells belongs to the net
-    color: net color
+    color: color o net line (border color of grid)
+    net_id: id of net, starting from 0
     min_row, max_row, min_col, max_col: the four borders of the nets
     """
 
     def __init__(self):
         self.cells = [] # contains the cells inside this net
         self.color = 'black'
+        self.net_id = None
 
         # for calculating half perimeter
         self.min_row = 0
@@ -71,20 +73,20 @@ class Net:
 
         # find four borders
         # row
-        x_min = x_max = self.cells[0].col
-        y_min = y_max = self.cells[0].row
+        x_min = x_max = self.cells[0].corresponding_site.col
+        y_min = y_max = self.cells[0].corresponding_site.row
 
         # find max and min row and col values of remaining nodes
         for node in self.cells[1:]:
-            if node.col < x_min:
-                x_min = node.col
-            elif node.col > x_max:
-                x_max = node.col
+            if node.corresponding_site.col < x_min:
+                x_min = node.corresponding_site.col
+            elif node.corresponding_site.col > x_max:
+                x_max = node.corresponding_site.col
 
-            if node.row < y_min:
-                y_min = node.row
-            elif node.row > y_max:
-                y_max = node.row
+            if node.corresponding_site.row < y_min:
+                y_min = node.corresponding_site.row
+            elif node.corresponding_site.row > y_max:
+                y_max = node.corresponding_site.row
 
         # calculate half perimeter bounding box
         # - multiply y coord by 2 to account for empty rows between cells

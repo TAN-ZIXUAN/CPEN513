@@ -120,6 +120,7 @@ class Circuit:
                     
                     net = Net()
                     net_num = line_num - 1 # net number starting from 0
+                    net.net_id = net_num
                     # print("loading net", net_num)
                     hex_colors = create_hex_color_list()
                     net.color = hex_colors[net_num % len(hex_colors)] # TODO: create a color list from hex_color.txt

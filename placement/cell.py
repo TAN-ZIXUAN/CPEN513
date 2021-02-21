@@ -12,13 +12,13 @@ class Cell:
     def __init__(self, cell_id):
         self.cell_id = cell_id
         self.corresponding_site = None
-        self.row = None
-        self.col = None
+        # self.row = None
+        # self.col = None
         self.nets = []
         
 
     def __str__(self):
-        return 'cell {cell_id} ({row}, {col})'.format(cell_id=self.cell_id, row=self.row, col=self.col)
+        return 'cell {cell_id} ({row}, {col})'.format(cell_id=self.cell_id, row=self.corresponding_site.row, col=self.corresponding_site.col)
 
     def calc_nets_cost_with_cell(self):
         """ return the cost of nets after including the current cell
@@ -37,10 +37,10 @@ class Cell:
         (compare the row and col of cell with the net's bounadary)
         """
 
-        min_row = min(net.min_row, self.row)
-        max_row = max(net.max_row, self.row)
-        min_col = min(net.min_col, self.col)
-        max_col = max(net.max_col, self.col)
+        min_row = min(net.min_row, self.corresponding_site.row)
+        max_row = max(net.max_row, self.corresponding_site.row)
+        min_col = min(net.min_col, self.corresponding_site.col)
+        max_col = max(net.max_col, self.corresponding_site.col)
 
         half_perimeter = (max_row - min_row) + (max_col - min_col)
 

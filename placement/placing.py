@@ -56,10 +56,10 @@ def canvas_clear_nets():
     canvas.delete('nets')
 
 def canvas_draw_nets():
-    cnt = 0
+    # cnt = 0
     for net in circuit.netlist:
-        print("draw net ",cnt)
-        cnt += 1
+        # print("draw net ",cnt)
+        # cnt += 1
         src = net.cells[0]
         x1, y1 = src.corresponding_site.get_rect_center(canvas)
         for sink in net.cells[1:]:
@@ -100,8 +100,6 @@ def random_placement():
         site = circuit.get_site_by_id(random_site_id)
         cell = circuit.cell_list[cell_id]
         site.element = cell
-        cell.row = site.row
-        cell.col = site.col
         cell.corresponding_site = site
         # print(cell.__str__())
 def init_place():
@@ -188,11 +186,11 @@ def select_sites():
 def swap_sites(site1, site2):
     """Swap element of two sites."""
     site1.element, site2.element = site2.element, site1.element
-
-    if site1.element != None:
-        site1.element.corresponding_site = site1
-    if site2.element != None:
-        site2.element.corresponding_site = site2
+    site1.element.corresponding_site, site2.element.corresponding_site = site2.element.corresponding_site, site1.element.corresponding_site 
+    if site1.element == None:
+        site1.element.corresponding_site = None
+    if site2.element == None:
+        site2.element.corresponding_site = None
 
 def anneal():
     # temp = initial_temp()
@@ -305,31 +303,56 @@ def annealing(initial_temp, num_iterations, cooling_rate, threshold):
     T = initial_temp
     # initial placement
     # random_placement()
-    print("cost", circuit.calc_total_cost())
+    initial_cost = circuit.calc_total_cost()
     grid = circuit.grid
+    print("inital cost", initial_cost)
+    good_cost = initial_cost
+
+    good_grid = circuit.grid
 
     while(T > threshold):
+        print("T = ", T)
         for _ in range(num_iterations): # TODO: cost didn't change after swap site
             site1, site2 = select_sites()
             pre_swap_cost = 0
-            if not site1.is_empty():
-                cell1 = site1.element
-                pre_swap_cost += cell1.calc_nets_cost_with_cell()
-            if not site2.is_empty():
-                cell2 = site2.element
-                pre_swap_cost += cell2.calc_nets_cost_with_cell()
+            pre_swap_cost = circuit.calc_total_cost()
+            # if not site1.is_empty():
+            #     cell1 = site1.element
+            #     # net_id_list = [net.net_id for net in cell1.nets]
+            #     # print("pre cell1", net_id_list)
+            #     pre_swap_cost += cell1.calc_nets_cost_with_cell()
+            # if not site2.is_empty():
+            #     cell2 = site2.element
+            #     pre_swap_cost += cell2.calc_nets_cost_with_cell()
+                # net_id_list = [net.net_id for net in cell2.nets]
+                # print("pre cell2", net_id_list)
 
             swap_sites(site1, site2)
 
             post_swap_cost = 0
-            if not site1.is_empty():
-                cell1 = site1.element
-                post_swap_cost += cell1.calc_nets_cost_with_cell()
-            if not site2.is_empty():
-                cell2 = site2.element
-                post_swap_cost += cell2.calc_nets_cost_with_cell()
+            post_swap_cost = circuit.calc_total_cost()
+            # if not site1.is_empty():
+            #     cell1 = site1.element
+            #     # net_id_list = [net.net_id for net in cell1.nets]
+            #     # print("post cell1", net_id_list)
+            #     post_swap_cost += cell1.calc_nets_cost_with_cell()
+            #     print("post cost", post_swap_cost)
+                
+            # if not site2.is_empty():
+            #     cell2 = site2.element
+            #     # net_id_list = [net.net_id for net in cell2.nets]
+            #     # print("post cell2", net_id_list)
+            #     post_swap_cost += cell2.calc_nets_cost_with_cell()
 
             delta_c = post_swap_cost - pre_swap_cost 
+            # record good placement
+            if delta_c < 0:
+                curr_good_cost = post_swap_cost
+                if curr_good_cost < good_cost:
+                    good_cost = curr_good_cost
+                    good_grid = circuit.grid
+
+            # print("delta", delta_c)
 
             r = random.random()
             if r < math.exp(-delta_c / T):
@@ -343,6 +366,7 @@ def annealing(initial_temp, num_iterations, cooling_rate, threshold):
                 grid = circuit.grid
         T *= cooling_rate
         cost = circuit.calc_total_cost()
+        print("inner cost", cost)
         total_cost_text.set(cost)
         update_canvas()
         # if delta_c  < 0:
@@ -353,7 +377,7 @@ def annealing(initial_temp, num_iterations, cooling_rate, threshold):
         # else: # take moves
         #     circuit.total_cost += delta_c
         #     print("inner cost", circuit.total_cost)
-    return grid
+    return good_grid
 
 
             
