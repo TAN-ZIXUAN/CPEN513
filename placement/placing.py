@@ -18,16 +18,25 @@ def init_canvas():
 
     # size of site
     rdim = 20
-    if circuit.num_cols < 25:
-        rdim = 50
-    elif circuit.num_cols <50:
-        rdim = 20
+    if circuit.num_rows < 10:
+        if circuit.num_cols < 10:
+            rdim = 50
+        elif circuit.num_cols < 30:
+            rdim = 30
+        else:
+            rdim = 15
+    elif circuit.num_rows <30:
+        if circuit.num_cols < 10:
+            rdim = 50
+        elif circuit.num_cols < 30:
+            rdim = 30
+        else:
+            rdim = 10
     else:
         rdim = 10
     rh = rw = rdim
     xoffset = rdim // 5
     yoffset = rdim // 5
-    xoffset
 
     # size of canvas
     cw = circuit.num_cols * rw + 2 * xoffset
@@ -47,14 +56,24 @@ def canvas_clear_nets():
     canvas.delete('nets')
 
 def canvas_draw_nets():
+    cnt = 0
     for net in circuit.netlist:
+        print("draw net ",cnt)
+        cnt += 1
         src = net.cells[0]
         x1, y1 = src.corresponding_site.get_rect_center(canvas)
         for sink in net.cells[1:]:
+            # print(sink.corresponding_site.get_rect_center(canvas))
             x2, y2 = sink.corresponding_site.get_rect_center(canvas)
             canvas.create_line(x1, y1, x2, y2, fill=net.color, tags='nets')
 
 
+# def update_rects():
+#     """Redraw sites in canvas."""
+#     # Update rectanges of sites
+#     for row in circuit.grid:
+#         for site in row:
+#             site.update_rect()
 
 def update_canvas():
     canvas_clear_nets()
@@ -153,7 +172,7 @@ def exit_condition(temp, accepted_costs):
 def select_sites():
     """Return a list of 2 randomly selected sites, only one may be empty."""
     while True:
-        [site_id1, site_id2] = random.sample(range(circuit.num_sites), 2)
+        (site_id1, site_id2) = random.sample(range(circuit.num_sites), 2)
         site1 = circuit.get_site_by_id(site_id1)
         site2 = circuit.get_site_by_id(site_id2)
     
@@ -315,7 +334,7 @@ def annealing(initial_temp, num_iterations, cooling_rate, threshold):
             r = random.random()
             if r < math.exp(-delta_c / T):
                 circuit.total_cost += delta_c
-                print("inner cost", circuit.total_cost)
+                # print("inner cost", circuit.total_cost)
                 grid = circuit.grid
             else:
                 # undo moves

@@ -92,6 +92,9 @@ class Circuit:
         with open(filepath, 'r') as f:
             for line_num, l in enumerate(f):
                 line = l.strip().split()
+                if not line: # be careful about empty lines
+                    break
+                # print("{} {}".format(line_num, line))
                 if line_num == 0: # first line: num_cells, num_connections, num_rows, num_cols
                     self.num_cells = int(line[0])
                     self.init_cell_list(self.num_cells)

@@ -41,7 +41,7 @@ class Site:
             canvas.itemconfigure(self.rect, fill='white')
             #self.set_text('') # debugging: put ID label on each node
         else:
-            canvas.itemconfigure(self.rect, fill='light grey')
+            canvas.itemconfigure(self.rect, fill='grey')
             #self.set_text(self.content.ID) # debug: put ID label on each node
 
     
