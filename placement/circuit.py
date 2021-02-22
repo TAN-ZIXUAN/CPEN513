@@ -31,8 +31,6 @@ class Circuit:
     netlist: netlist of the circuit
     cell_list: list of cells that should be placed on the circuit
 
-
-
     """
 
     def __init__(self):
@@ -107,13 +105,7 @@ class Circuit:
                     self.num_cols = int(line[3])
                     self.init_grid(self.num_rows, self.num_cols)
                     self.num_sites = self.num_rows * self.num_cols
-
-                    # # logging.info("num_cells: {num_cells}, num_connections: {num_connections}, num_rows: {num_rows}, num_cols: {num_cols}".format(
-                    #     num_cells = self.num_cells,
-                    #     num_connections = self.num_connections,
-                    #     num_rows = self.num_rows,
-                    #     num_cols = self.num_cols
-                    # ))
+                    
                     print("num_cells: {num_cells}, num_connections: {num_connections}, num_rows: {num_rows}, num_cols: {num_cols}".format(
                         num_cells = self.num_cells,
                         num_connections = self.num_connections,

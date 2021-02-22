@@ -30,10 +30,8 @@ class Site:
         """Colour the rectangle according to content, set text to Node ID."""
         if self.is_empty():
             canvas.itemconfigure(self.rect, fill='white')
-            #self.set_text('') # debugging: put ID label on each node
         else:
             canvas.itemconfigure(self.rect, fill='blue')
-            #self.set_text(self.content.ID) # debug: put ID label on each node
 
     
 
