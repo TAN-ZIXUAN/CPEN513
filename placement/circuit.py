@@ -44,7 +44,7 @@ class Circuit:
         self.num_sites = 0
         
 
-        self.grid = []  # the 2d grid that represents cirtcuit
+        self.grid = [[]]  # the 2d grid that represents cirtcuit
         self.netlist = []
         self.cell_list = []  # list of cells
         self.total_cost = 0
@@ -56,15 +56,13 @@ class Circuit:
         self.num_cols = num_cols
         self.num_sites = num_rows * num_cols
 
-    def init_net_list(self):
+    def init_netlist(self):
         self.netlist = []
 
     def init_cell_list(self, num_cells):
         """init cell_list"""
         self.cell_list = [Cell(cell_id) for cell_id in range(num_cells)]
 
-    # def get_site_by_id():
-    #     pass
 
     def calc_total_cost(self):
         """return the total cost the current placement"""
@@ -87,8 +85,14 @@ class Circuit:
             for site in row:
                 site.update_rect(canvas)
 
+    def update_grid(self):
+        pass
+
     def parse_circuit_file(self, filepath = "ass2_files/cm151a.txt"):
         """parse the circuit file"""
+        # self.init_grid()
+        self.init_netlist()
+        # self.init_cell_list()
         with open(filepath, 'r') as f:
             for line_num, l in enumerate(f):
                 line = l.strip().split()
@@ -104,12 +108,12 @@ class Circuit:
                     self.init_grid(self.num_rows, self.num_cols)
                     self.num_sites = self.num_rows * self.num_cols
 
-                    logging.info("num_cells: {num_cells}, num_connections: {num_connections}, num_rows: {num_rows}, num_cols: {num_cols}".format(
-                        num_cells = self.num_cells,
-                        num_connections = self.num_connections,
-                        num_rows = self.num_rows,
-                        num_cols = self.num_cols
-                    ))
+                    # # logging.info("num_cells: {num_cells}, num_connections: {num_connections}, num_rows: {num_rows}, num_cols: {num_cols}".format(
+                    #     num_cells = self.num_cells,
+                    #     num_connections = self.num_connections,
+                    #     num_rows = self.num_rows,
+                    #     num_cols = self.num_cols
+                    # ))
                     print("num_cells: {num_cells}, num_connections: {num_connections}, num_rows: {num_rows}, num_cols: {num_cols}".format(
                         num_cells = self.num_cells,
                         num_connections = self.num_connections,

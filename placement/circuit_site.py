@@ -10,7 +10,7 @@ class Site:
     rect: canvas rectangle unit
 
     """
-    def __init__(self, row=0, col=0):
+    def __init__(self, row=None, col=None):
         self.row = row
         self.col = col
         self.element = None    # cell in the current site. None if it's empty
