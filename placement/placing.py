@@ -99,29 +99,29 @@ def get_init_temp(k=20, num_moves=10):
     costs = [0 for _ in range(num_moves)]
     for i in range(num_moves):
         site1, site2 = select_sites()
-        pre_swap_cost = 0
-        # pre_swap_cost = circuit.calc_total_cost()
+        cost_before_swap = 0
+        # cost_before_swap = circuit.calc_total_cost()
         if not site1.is_empty():
             cell1 = site1.element
-            pre_swap_cost += cell1.calc_nets_cost_with_cell()
+            cost_before_swap += cell1.calc_nets_cost_with_cell()
         if not site2.is_empty():
             cell2 = site2.element
-            pre_swap_cost += cell2.calc_nets_cost_with_cell()
+            cost_before_swap += cell2.calc_nets_cost_with_cell()
 
         swap_sites(site1, site2)
 
-        post_swap_cost = 0
-        # post_swap_cost = circuit.calc_total_cost()
+        cost_after_swap = 0
+        # cost_after_swap = circuit.calc_total_cost()
         if not site1.is_empty():
             cell1 = site1.element
-            post_swap_cost += cell1.calc_nets_cost_with_cell()
-            # print("post cost", post_swap_cost)
+            cost_after_swap += cell1.calc_nets_cost_with_cell()
+            # print("post cost", cost_after_swap)
             
         if not site2.is_empty():
             cell2 = site2.element
-            post_swap_cost += cell2.calc_nets_cost_with_cell()
+            cost_after_swap += cell2.calc_nets_cost_with_cell()
 
-        delta_c = post_swap_cost - pre_swap_cost
+        delta_c = cost_after_swap - cost_before_swap
         circuit.total_cost += delta_c
         costs[i] = circuit.total_cost
 
@@ -223,7 +223,7 @@ def placing():
         cooling_rate = 0.95
         stdev_threshold = 0.01
     elif T0 <=500:
-        threshold = 0.01
+        threshold = 0.001
         cooling_rate = 0.95
         stdev_threshold = 0.01
     elif T0 <= 1000:
@@ -231,7 +231,7 @@ def placing():
         cooling_rate = 0.95
         stdev_threshold = 0.01
     else:
-        threshold = 0.01
+        threshold = 0.001
         cooling_rate = 0.95
         stdev_threshold = 0.01
     print("T0:{}, num_iterations:{}, cooling rate:{}, threshold:{}".format(T0, num_iterations, cooling_rate, threshold))
@@ -261,36 +261,37 @@ def annealing(initial_temp, cooling_rate, threshold, num_iterations, costs, stde
         plot_line_chart()
         anneal_btn.state(['disabled'])
     else: # continue annealing
-        root.after(100, annealing, T, cooling_rate, threshold, num_iterations, costs, stdev_threshold)
+        root.after(10, annealing, T, cooling_rate, threshold, num_iterations, costs, stdev_threshold)
 
 
 def anneal_loop(T, num_iterations,costs):
     # print("T", T)
     for _ in range(num_iterations): # TODO: cost didn't change after swap site
         site1, site2 = select_sites()
-        pre_swap_cost = 0
-        # pre_swap_cost = circuit.calc_total_cost()
+        cost_before_swap = 0
+        cost_after_swap = 0
+        # cost_before_swap = circuit.calc_total_cost()
         if not site1.is_empty():
             cell1 = site1.element
-            pre_swap_cost += cell1.calc_nets_cost_with_cell()
+            cost_before_swap += cell1.calc_nets_cost_with_cell()
         if not site2.is_empty():
             cell2 = site2.element
-            pre_swap_cost += cell2.calc_nets_cost_with_cell()
+            cost_before_swap += cell2.calc_nets_cost_with_cell()
 
         swap_sites(site1, site2)
 
-        post_swap_cost = 0
-        # post_swap_cost = circuit.calc_total_cost()
+        cost_after_swap = 0
+        # cost_after_swap = circuit.calc_total_cost()
         if not site1.is_empty():
             cell1 = site1.element
-            post_swap_cost += cell1.calc_nets_cost_with_cell()
-            # print("post cost", post_swap_cost)
+            cost_after_swap += cell1.calc_nets_cost_with_cell()
+            # print("post cost", cost_after_swap)
             
         if not site2.is_empty():
             cell2 = site2.element
-            post_swap_cost += cell2.calc_nets_cost_with_cell()
+            cost_after_swap += cell2.calc_nets_cost_with_cell()
 
-        delta_c = post_swap_cost - pre_swap_cost 
+        delta_c = cost_after_swap - cost_before_swap 
 
         r = random.random()
         try:
