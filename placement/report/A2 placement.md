@@ -1,3 +1,4 @@
+# CPEN513 A2 Placement
 ## Summary
 
 In this assignment, simulated annealing algorithm is used on chip placement. Initial temperature is generated from a set of random swaps.  Half perimeter is used to approximate the cost. Two exit criterion are used. The first one is the temperature threshold.   Annealing stops when the temperature is below the threshold. The second one is the deviation of previous costs.  The deviation of n recent costs is  being monitored. We exit the loop when the cost does not change much over the time.  We reduce temperature by multiply it by a constant called cooling rate.
@@ -83,6 +84,8 @@ function annealing(cooling_rate, threshold, num_iterations,n, n_recent_costs, st
             swap(site2, site1)
 ```
 
+
+
 ## Test
 
 A `pytest` test file for testing the half perimeter function
@@ -112,6 +115,8 @@ All tests are passed.
 `FuncAnimation` from `matplot` is easy to implement when draw direct data grid or chart. This time we need to draw nets connections.  Drawing random shapes or lines are easier on GUI tools like `tkinker`. So both`matplot` and `tkinker` are used in this program.  `tkinker` shows the real time chip placement and `matplot` is used to draw the line chart of cost and temperature after annealing.
 
 <img src="A2 placement.assets/image-20210221230137452.png" alt="image-20210221230137452" style="zoom:50%;" /><img src="A2 placement.assets/image-20210221230308000.png" alt="image-20210221230308000" style="zoom: 50%;" />
+
+
 
 ## Results
 
