@@ -36,3 +36,15 @@ under the folder `placement`
 |     pairb      | 72997        | 15397      | 79%          |
 
 (*`improvements = -(final_cost - initial_cost) / initial_cost *100%`)
+
+### animation
+
+- alu2
+
+  
+
+  <video src="C:/Users/Tan/Videos/Captures/Placement 2021-03-04 21-37-18.mp4"></video>
+
+  ![1](readme.assets/1.png)
+
+- 
