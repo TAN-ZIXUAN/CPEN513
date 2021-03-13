@@ -13,10 +13,11 @@ class Block:
     
     def __str__(self):
         nodes = list(self.nodes)
+        # nodes_id = [node.node_id for node in nodes]
         nodes_id = [(node.node_id,node.gain) for node in nodes]
-        unlocked_nodes_id = [(node.node_id, node.gain )for node in self.unlocked_nodes]
-        return "{} unlocked{}".format(nodes_id, unlocked_nodes_id)
-        # return "{}".format(nodes_id)
+        # unlocked_nodes_id = [(node.node_id, node.gain )for node in self.unlocked_nodes]
+        # return "{} unlocked{}".format(nodes_id, unlocked_nodes_id)
+        return "{}".format(nodes_id)
 
     def clear_block(self):
         """"clear all the nodes stores in the block"""

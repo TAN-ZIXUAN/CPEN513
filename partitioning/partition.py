@@ -108,7 +108,7 @@ def rollback_to_saved_partition(partition_copy, edges_copy):
     init_gains()
     chip.cutsize = chip.min_cutsize
     chip.net_cutsize = chip.calc_net_cutsize()
-    print("110 net", chip.net_cutsize)
+    # print("110 net", chip.net_cutsize)
     net_cutsize_text.set(chip.net_cutsize)
     
 
@@ -141,7 +141,6 @@ def partition(num_passes = 4):
             chip.net_cutsize = chip.calc_net_cutsize()
             # chip.cutsize -= node.gain
             # node.gain = -node.gain
-            
             if chip.cutsize >= 0 and chip.cutsize < chip.min_cutsize:
                     chip.min_cutsize = chip.cutsize
                     chip.best_partition_copy = chip.save_partition()
