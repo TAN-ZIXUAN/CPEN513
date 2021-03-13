@@ -123,6 +123,8 @@ We use `tkinker` to select benchmark files and represent final partition result.
 | ugly16          | 63           | 16          |
 | z4ml            | 6            | 5           |
 
-We discovered something interesting, The differences for results of `twocm` are huge. When our goal is to minimize edge cutsize, the edge cutsize and net cutsize are optimized to 1. However wen our goal is to minimize net cutsize, the optimal net cutsize we get is 12
+We discovered something interesting, The differences for results of `twocm` are huge. When our goal is to minimize edge cutsize, the edge cutsize and net cutsize are optimized to 1. However wen our goal is to minimize net cutsize, the optimal net cutsize we get is 12.
 
 ![image-20210313104602015](A3 Partition.assets/image-20210313104602015.png)
+
+![image-20210313105745687](A3 Partition.assets/image-20210313105745687.png)
