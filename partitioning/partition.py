@@ -27,12 +27,20 @@ def init_gains():
         node.unlock_node()
         node.gain = 0
         from_block = node.block_id
-        to_block = (node.block_id + 1) % 2
-        for nei in chip.graph[node]:
-            if nei.block_id == to_block:
+        to_block = (node.block_id + 1) % 2 # 0 -> 1, 1 -> 0
+
+        for net in node.nets:
+            # node makes the net crosses partitionAS
+            if net.partitions[from_block] == 1:
                 node.gain += 1
-            elif nei.block_id == from_block:
+            # no net node crosses partition
+            if net.partitions[to_block] == 0:
                 node.gain -= 1
+        # for nei in chip.graph[node]:
+        #     if nei.block_id == to_block:
+        #         node.gain += 1
+        #     elif nei.block_id == from_block:
+        #         node.gain -= 1
 
         chip.blocks[node.block_id].add_node(node)
 
@@ -74,6 +82,7 @@ def move_node(node):
     node.lock_node()
     node.block_id = to_block
     chip.blocks[node.block_id].add_node(node)
+    # update net partitions
     for net in node.nets:
         net.partitions[from_block] -= 1
         net.partitions[to_block] += 1
@@ -82,12 +91,13 @@ def move_node(node):
     for edge in chip.edges:
         if node in edge:
             chip.edges[edge] = not chip.edges[edge] # flip value iscut => !iscut
-    # update gains of all connected node
-    for nei in chip.graph[node]:
-        if nei.block_id == from_block:
-            nei.gain += 1
-        elif nei.block_id == to_block:
-            nei.gain -= 1
+    # for min edge cut
+    # # update gains of all connected node
+    # for nei in chip.graph[node]:
+    #     if nei.block_id == from_block:
+    #         nei.gain += 1
+    #     elif nei.block_id == to_block:
+    #         nei.gain -= 1
             
 def rollback_to_saved_partition(partition_copy, edges_copy):
     """
@@ -106,22 +116,24 @@ def rollback_to_saved_partition(partition_copy, edges_copy):
     # edges
     chip.edges = edges_copy
     init_gains()
-    chip.cutsize = chip.min_cutsize
-    chip.net_cutsize = chip.calc_net_cutsize()
+    chip.net_cutsize = chip.min_cutsize
+    chip.cutsize = chip.calc_cutsize() # edge cutsize
     # print("110 net", chip.net_cutsize)
     net_cutsize_text.set(chip.net_cutsize)
+    edge_cutsize_text.set(chip.cutsize)
     
 
-def partition(num_passes = 4):
+def partition(num_passes = 5):
     print(chip.graph_id)
     # random_partition()
     chip.blocks[0].clear_block()
     chip.blocks[1].clear_block()
     init_gains()
-    chip.cutsize = chip.calc_cutsize()
+    chip.net_cutsize = chip.calc_net_cutsize()
+    chip.cutsize = chip.calc_cutsize() # edge cutsize
     chip.best_partition_copy = save_partition()
     chip.edges_copy = chip.edges.copy()
-    chip.min_cutsize = chip.cutsize
+    chip.min_cutsize = chip.net_cutsize
     gui.draw_canvas()
     root.after(100)
     # prev_min_cutsize = chip.cutsize
@@ -133,16 +145,16 @@ def partition(num_passes = 4):
         
         while chip.has_unlocked_nodes():
             print(chip)       
-            # chip.calc_all_gains()
+            chip.calc_all_gains()
             node = select_node()
             move_node(node)
             # print("move node {} to {}".format(node.node_id, node.block_id))
-            chip.cutsize = chip.calc_cutsize()
+            # chip.cutsize = chip.calc_cutsize()
             chip.net_cutsize = chip.calc_net_cutsize()
             # chip.cutsize -= node.gain
             # node.gain = -node.gain
-            if chip.cutsize >= 0 and chip.cutsize < chip.min_cutsize:
-                    chip.min_cutsize = chip.cutsize
+            if chip.net_cutsize >= 0 and chip.net_cutsize < chip.min_cutsize:
+                    chip.min_cutsize = chip.net_cutsize
                     chip.best_partition_copy = chip.save_partition()
                     chip.edges_copy = chip.edges.copy()
         rollback_to_saved_partition(chip.best_partition_copy, chip.edges_copy)

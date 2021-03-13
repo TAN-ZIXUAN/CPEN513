@@ -5,6 +5,34 @@
 In this assignment, Kernighan-Lin algorithm is implemented to do bi-partitioning. A graph and presents node and its connections and a dictionary(HashMap) which stores all the edges are created. We calculate the edge cut size and net cut size when partitioning.
 
 ## Algorithm
+### Kernighan-Lin /  Fiduccia-Matheyses
+
+Kernighan-Lin algorithm is implemented to do bi-partitioning. 
+
+We use max heap queue to stores the unlocked nodes so that we can get or pop the nodes with the  highest gain. 
+
+```python
+function partition(num_passes):
+    initial gains of nodes
+    get current cutsize, partition, edges
+    min_edge_cutsize = current edge_cutsize
+    for _ in range(num_passes):
+        unlock all nodes
+        while chip has unlocked nodes:
+        	calculate all gains
+            node = select_node()
+            move_node(node)
+            cutsize -= node.gain
+            if cutsize < min_cutsize:
+                update min_cutsize
+                store current partition
+                store edges
+        rollback_to_saved_partition(partition_copy, edges_copy)        
+```
+
+When selecting node, we select nodes whose move would not cause an imbalance. In every iteration, we store the partition with min edge cutsize
+
+When moving nodes, we also update gains of all the nodes that connects to the our selected node.
 
 ### Graph
 
@@ -27,34 +55,16 @@ Key is a `frozenset` which contains the two vertices(nodes) of the edge. Value i
 
 We also calculated the net cut size. The net cut size stores the number of net which crosses partition.
 
+### Node gain
 
-## Kernighan-Lin /  Fiduccia-Matheyses
+1. minimizing net cutsize
 
-Kernighan-Lin algorithm is implemented to do bi-partitioning. 
+   For every net that the node connect to, we increase gain if the node is the only node which makes the net crosses partition. We decrease gain if the all of the nodes in the net is in the same block.
 
-We use max heap queue to stores the unlocked nodes so that we can get or pop the nodes with the  highest gain. 
+2. minimizing edge cutsize
 
-```python
-function partition(num_passes):
-    initial gains of nodes
-    get current cutsize, partition, edges
-    min_edge_cutsize = current edge_cutsize
-    for _ in range(num_passes):
-        unlock all nodes
-        while chip has unlocked nodes:
-            node = select_node()
-            move_node(node)
-            cutsize -= node.gain
-            if edge_cutsize < min_edge_cutsize:
-                update min_edge_cutsize
-                store current partition
-                store edges
-        rollback_to_saved_partition(partition_copy, edges_copy)        
-```
+   We traverse the edges that the node connect to. We increase gain if the edge crosses partition. We decrease gain if the edge does not crosses partition
 
-When selecting node, we select nodes whose move would not cause an imbalance. In every iteration, we store the partition with min edge cutsize
-
-When moving nodes, we also update gains of all the nodes that connects to the our selected node.
 
 ## Test
 
@@ -82,6 +92,23 @@ Test is passed.
 We use `tkinker` to select benchmark files and represent final partition result.
 
 ## Results
+
+1. minimize the nets crosses partition
+| benchmark files | net cutsize | edge cutsize |
+| --------------- | ------------ | ----------- |
+| cc              | 8          | 23        |
+| cm82a           | 1           | 2          |
+| cm138a          | 4          | 11         |
+| cm150a          | 6          | 14         |
+| cm162a          | 8          | 15        |
+| con1            | 4           | 6          |
+| twocm           | 12           | 26         |
+| ugly8           | 8          | 15         |
+| ugly16          | 16         | 64        |
+| z4ml            | 4           | 6          |
+
+
+1. minimize the edges crosses partition
 
 | benchmark files | edge cutsize | net cutsize |
 | --------------- | ------------ | ----------- |

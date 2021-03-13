@@ -85,7 +85,7 @@ class Chip:
         # for net in self.netlist:
         #     if net.iscut():
         #         cutsize += 1
-        # # self.cutsize = cutsize
+        # self.cutsize = cutsize
         return cutsize
     def get_max_net_size(self): # max number of pins on node
         """return the max net size among all nodes"""
@@ -106,17 +106,27 @@ class Chip:
             node.unlock_node()
 
     def calc_all_gains(self):
+        
         for node in self.node_list:
-            if node.is_unlocked(): # calc gains of unlocked nodes
-                node.gain = 0
-                from_block = node.block_id
-                to_block = (node.block_id + 1) % 2
-                for node in self.graph:
-                    for nei in self.graph[node]:
-                        if nei.block_id == to_block:
-                            node.gain += 1
-                        if nei.block_id == from_block:
-                            node.gain -= 1
+            node.gain = 0
+            from_block = node.block_id
+            to_block = (node.block_id + 1) % 2
+
+            for net in node.nets:
+                if net.partitions[from_block] == 1:
+                    node.gain += 1
+                if net.partitions[to_block] == 0:
+                    node.gain -= 1
+            # if node.is_unlocked(): # calc gains of unlocked nodes
+            #     node.gain = 0
+            #     from_block = node.block_id
+            #     to_block = (node.block_id + 1) % 2
+            #     for node in self.graph:
+            #         for nei in self.graph[node]:
+            #             if nei.block_id == to_block:
+            #                 node.gain += 1
+            #             if nei.block_id == from_block:
+            #                 node.gain -= 1
                 
     
     def save_partition(self):
