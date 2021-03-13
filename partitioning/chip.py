@@ -42,6 +42,7 @@ class Chip:
         self.graph_id = defaultdict(set)
         self.edges = {} # key: frozentset(node_1, node_2)  value: true-iscut, fasle - not cut 
         self.cutsize = 0
+        self.net_cutsize = 0
         self.min_cutsize = None
         self.best_partition_copy = None
         self.blocks = [Block(), Block()]
@@ -69,7 +70,12 @@ class Chip:
         """
         for net in self.netlist:
             net.init_partitions()
-
+    def calc_net_cutsize(self):
+        net_cutsize = 0
+        for net in self.netlist:
+            if net.iscut():
+                net_cutsize += 1
+        return net_cutsize
     def calc_cutsize(self):
         """"calculate the ut size and return it"""
         cutsize = 0

@@ -22,6 +22,7 @@ def init_gains():
     node in block 1 (from: block 1, to: block 0)
     so gain = sum(To) - sum(From)
     """
+    chip.init_net_partitions()
     for node in chip.graph:
         node.unlock_node()
         node.gain = 0
@@ -106,6 +107,9 @@ def rollback_to_saved_partition(partition_copy, edges_copy):
     chip.edges = edges_copy
     init_gains()
     chip.cutsize = chip.min_cutsize
+    chip.net_cutsize = chip.calc_net_cutsize()
+    print("110 net", chip.net_cutsize)
+    net_cutsize_text.set(chip.net_cutsize)
     
 
 def partition(num_passes = 4):
@@ -134,6 +138,7 @@ def partition(num_passes = 4):
             move_node(node)
             # print("move node {} to {}".format(node.node_id, node.block_id))
             chip.cutsize = chip.calc_cutsize()
+            chip.net_cutsize = chip.calc_net_cutsize()
             # chip.cutsize -= node.gain
             # node.gain = -node.gain
             
@@ -144,12 +149,15 @@ def partition(num_passes = 4):
         rollback_to_saved_partition(chip.best_partition_copy, chip.edges_copy)
     gui.draw_canvas()
     print("best partition")
+    load_btn.state(['disabled'])
+    partition_btn.state(['disabled'])
     print(chip)
 
 class GUI:
     def init_canvas(self):
         canvas.delete(ALL)
-        cutsize_text.set('-')
+        edge_cutsize_text.set('-')
+        net_cutsize_text.set('-')
         self.rdim = 25 # rectangle dimensions
         self.node_pad = 5 # padding between node rectangles
         self.x_pad = 50 # padding in x coordinate between partitions
@@ -212,7 +220,8 @@ class GUI:
         # init_canvas()
         self.draw_nodes()
         self.draw_nets()
-        cutsize_text.set(chip.cutsize)
+        edge_cutsize_text.set(chip.cutsize)
+        net_cutsize_text.set(chip.net_cutsize)
 
 
 def load_file_button():
@@ -274,9 +283,15 @@ if __name__ == "__main__":
     partition_btn.grid(column=1, row=0, padx=5, pady=5)
     partition_btn.state(['disabled'])
 
-    cutsize_text = StringVar()
-    cutsize_text.set('-')
-    ttk.Label(stats_frame, text="cutsize:").grid(column=1, row=1, sticky=E)
-    cutsize_lbl = ttk.Label(stats_frame, textvariable=cutsize_text)
+    edge_cutsize_text = StringVar()
+    edge_cutsize_text.set('-')
+    ttk.Label(stats_frame, text="edge cutsize:").grid(column=1, row=1, sticky=E)
+    cutsize_lbl = ttk.Label(stats_frame, textvariable=edge_cutsize_text)
     cutsize_lbl.grid(column=2, row=1, sticky=W)
+
+    net_cutsize_text = StringVar()
+    net_cutsize_text.set('-')
+    ttk.Label(stats_frame, text="net cutsize:").grid(column=1, row=2, sticky=E)
+    net_cutsize_lbl = ttk.Label(stats_frame, textvariable=net_cutsize_text)
+    net_cutsize_lbl.grid(column=2, row=2, sticky=W)
     root.mainloop()
