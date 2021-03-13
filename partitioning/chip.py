@@ -1,9 +1,10 @@
 import logging
-
+import random
 
 from node import Node
 from net import Net
 from block import Block
+from collections import defaultdict
 
 def create_hex_color_list(color_file="hex_color.txt"):
     """return hex color list"""
@@ -24,6 +25,7 @@ class Chip:
     num_connections: number of connections
     netlist: netlist of the chip
     node_list: list of nodes that should be placed on the chip
+    graph: a dict stores the connections between nodes. index: node, value:a list of node that the index node connects to 
     cut_size: cut size
     min_cutsize: stores the min cutsize of the chip
     best_partition: stores the best partition
@@ -36,23 +38,23 @@ class Chip:
         self.num_connections = 0 # number of connections
         self.netlist = []
         self.node_list = []  # list of nodes
+        self.graph = defaultdict(set)
+        self.graph_id = defaultdict(set)
+        self.edges = {} # key: frozentset(node_1, node_2)  value: true-iscut, fasle - not cut 
         self.cutsize = 0
         self.min_cutsize = None
-        self.best_partition = None
+        self.best_partition_copy = None
         self.blocks = [Block(), Block()]
 
-    # def init_grid(self, num_rows, num_cols):
-    #     """init grid which represent the chip"""
-    #     self.grid = [[Site(row, col) for col in range(num_cols)] for row in range(num_rows)]
-    #     self.num_rows = num_rows
-    #     self.num_cols = num_cols
-    #     self.num_sites = num_rows * num_cols
     def __str__(self):
         s = """{}
         block0:{}
         block1:{}
         """.format(self.cutsize, self.blocks[0], self.blocks[1])
         return s
+
+    def clear_blocks(self):
+        self.blocks = [Block(), Block()]
     def init_netlist(self):
         """"init netlist as an empty list"""
         self.netlist = []
@@ -71,10 +73,13 @@ class Chip:
     def calc_cutsize(self):
         """"calculate the ut size and return it"""
         cutsize = 0
-        for net in self.netlist:
-            if net.iscut():
+        for edges in self.edges:
+            if self.edges[edges] == True: # is cut
                 cutsize += 1
-        self.cut_size = cutsize
+        # for net in self.netlist:
+        #     if net.iscut():
+        #         cutsize += 1
+        # # self.cutsize = cutsize
         return cutsize
 
     def get_max_net_size(self): # max number of pins on node
@@ -97,26 +102,34 @@ class Chip:
 
     def calc_all_gains(self):
         for node in self.node_list:
-            if not node.islocked(): # calc gains of unlocked nodes
+            if node.is_unlocked(): # calc gains of unlocked nodes
                 node.gain = 0
                 from_block = node.block_id
                 to_block = (node.block_id + 1) % 2
+                for node in self.graph:
+                    for nei in self.graph[node]:
+                        if nei.block_id == to_block:
+                            node.gain += 1
+                        if nei.block_id == from_block:
+                            node.gain -= 1
                 
-                for net in node.nets:
-                    # gain = sum(subgain)
-                    # subgain = part1 - part2
-                    part1 = 0 # incident edges that cross partition 
-                    part2 = 0 # incident edges that do not
-                    part1 = net.partitions[to_block]  # equals to number of node in another block
-                    part2 = net.partitions[from_block] - 1 # edges = equals to number of node in the same block - 1 
-                    subgain = part1 - part2
-                    node.gain += subgain
     
     def save_partition(self):
         """save and return partition result"""
         block0 = list(self.blocks[0].save_copy())
         block1 = list(self.blocks[1].save_copy())
         return [block0, block1]
+    
+    def buid_graph(self, u, v):
+        self.graph[u].add(v)
+        self.graph[v].add(u)
+    def build_graph_id(self, u_id, v_id):
+        self.graph_id[u_id].add(v_id)
+        self.graph_id[v_id].add(u_id)
+    def buid_edges(self, u_node, v_node):
+        dict_key = frozenset((u_node, v_node))
+        value = u_node.block_id != v_node.block_id # True: is cut, False: not cut
+        self.edges[dict_key] = value
 
     def parse_chip_file(self, filepath = "ass3_files/cm82a.txt"):
         """parse the chip file"""
@@ -134,14 +147,12 @@ class Chip:
                     self.num_nodes = int(line[0])
                     self.init_node_list(self.num_nodes)
                     self.num_connections = int(line[1])
-                    # self.num_rows = int(line[2])
-                    # self.num_cols = int(line[3])
-                    # self.num_sites = self.num_rows * self.num_cols
-                    
-                    # print("num_nodes: {num_nodes}, num_connections: {num_connections}, num_rows: {num_rows}, num_cols: {num_cols}".format(
-                    #     num_nodes = self.num_nodes,
-                    #     num_connections = self.num_connections,
-                    # ))
+                    # assign block numbers:
+                    random_nodelist = random.sample(range(self.num_nodes), self.num_nodes)
+                    for i, node_id in enumerate(random_nodelist):
+                        node = self.node_list[node_id]
+                        node.block_id = random.choice([0, 1])# randomly(also equally) assign them block 0 or 1
+
                 else: # the rest of lines (contains netlist)
                     
                     net = Net()
@@ -151,8 +162,18 @@ class Chip:
                     hex_colors = create_hex_color_list()
                     net.color = hex_colors[net_num % len(hex_colors)] # TODO: create a color list from hex_color.txt
                     # num_nodes_of_net = line[0]  # number of nodes in current net
-
+                    
                     # node_id
+                    u_node_id = int(line[1])
+                    u_node = self.node_list[u_node_id]
+                    # u_node.block_id = random.choice([0, 1]) # randomly assign block id to node
+                    for item in line[2:]:
+                        v_node_id = int(item)
+                        v_node = self.node_list[v_node_id]
+                        self.buid_graph(u_node, v_node)
+                        self.build_graph_id(u_node_id, v_node_id)
+                        self.buid_edges(u_node, v_node)
+                        
                     for item in line[1:]:
                         node_id = int(item)
                         node = self.node_list[node_id]
@@ -161,6 +182,8 @@ class Chip:
                         net.nodes.append(node)
 
                     self.netlist.append(net)
+
+
 
 
                     

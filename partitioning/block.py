@@ -13,9 +13,10 @@ class Block:
     
     def __str__(self):
         nodes = list(self.nodes)
-        nodes_id = [node.node_id for node in nodes]
-        unlocked_nodes_id = [node.node_id for node in self.unlocked_nodes]
-        return "nodes: {}, unlocked_nodes: {}".format(nodes_id, unlocked_nodes_id)
+        nodes_id = [(node.node_id,node.gain) for node in nodes]
+        unlocked_nodes_id = [(node.node_id, node.gain )for node in self.unlocked_nodes]
+        return "{} unlocked{}".format(nodes_id, unlocked_nodes_id)
+        # return "{}".format(nodes_id)
 
     def clear_block(self):
         """"clear all the nodes stores in the block"""
@@ -30,7 +31,7 @@ class Block:
         """add a node into the block (add it to self.nodes)
         if the nodes is unlocked. we also push it into the heapq that stores the unlocked nodes
         """
-        if not node.islocked():
+        if node.is_unlocked():
             heapq.heappush(self.unlocked_nodes, node)
         self.nodes.add(node)
         # print("len_nodes", len(self.nodes))
@@ -47,15 +48,17 @@ class Block:
 
     def pop_max_gain_node(self):
         """pop out the node with max gain from unlocked_nodes"""
-        max_gain_node = heapq._heappop_max(self.unlocked_nodes) # index error raised if list is empty
+        max_gain_node = heapq.heappop(self.unlocked_nodes) # index error raised if list is empty
         self.nodes.remove(max_gain_node)
+        print("move node({},{})".format(max_gain_node.node_id, max_gain_node.gain))
         return max_gain_node
     
     def get_max_gain(self):
         """return the nodes with max gain
         unlocked_nodes is max heap. we get the max_gain node without removing it
         """
-        return self.unlocked_nodes[0]    # error should be raised if list is empty
+        # print("get max gain",self.unlocked_nodes[0])
+        return self.unlocked_nodes[-1]    # error should be raised if list is empty
             
     def has_node(self, node):
         """return True if the block has nodes in it else False"""

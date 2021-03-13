@@ -21,8 +21,8 @@ class Node:
     def __str__(self):
         return 'node {node_id} (gain={gain}, block id={block})'.format(node_id=self.node_id, gain=self.gain, block = self.block_id)
 
-    def islocked(self):
-        return self.status == 1
+    def is_unlocked(self):
+        return self.status == 0
 
     def lock_node(self):
         self.status = 1
@@ -42,7 +42,7 @@ class Node:
         return (center_x, center_y)
     
     def __lt__(self, other):
-        return self.gain < other.gain
+        return self.gain > other.gain
 
         
 
