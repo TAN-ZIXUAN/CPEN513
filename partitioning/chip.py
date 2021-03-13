@@ -76,7 +76,7 @@ class Chip:
             if net.iscut():
                 net_cutsize += 1
         return net_cutsize
-    def calc_cutsize(self):
+    def calc_cutsize(self): # edge cut size
         """"calculate the ut size and return it"""
         cutsize = 0
         for edges in self.edges:
@@ -87,7 +87,6 @@ class Chip:
         #         cutsize += 1
         # # self.cutsize = cutsize
         return cutsize
-
     def get_max_net_size(self): # max number of pins on node
         """return the max net size among all nodes"""
         max_net_size = 0
