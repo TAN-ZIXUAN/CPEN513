@@ -2,7 +2,9 @@
 
 ## Summary
 
-In this assignment, Kernighan-Lin algorithm is implemented to do bi-partitioning. A graph and presents node and its connections and a dictionary(HashMap) which stores all the edges are created. We calculate the edge cut size and net cut size when partitioning.
+In this assignment, Kernighan-Lin algorithm is implemented to do bi-partitioning. We optimize partitioning to minimizing the number of nets crosses partition. We also optimize partitioning to minimizing the number of edges crosses partition. Both of the results are presented in the `Results` part.
+
+(GitHub repository)
 
 ## Algorithm
 ### Kernighan-Lin /  Fiduccia-Matheyses
@@ -63,7 +65,7 @@ We also calculated the net cut size. The net cut size stores the number of net w
 
 2. minimizing edge cutsize
 
-   We traverse the edges that the node connect to. We increase gain if the edge crosses partition. We decrease gain if the edge does not crosses partition
+   We traverse the edges that the node connects to. We increase gain if the edge crosses partition and decrease gain if the edge does not crosses partition
 
 
 ## Test
@@ -123,7 +125,7 @@ We use `tkinker` to select benchmark files and represent final partition result.
 | ugly16          | 63           | 16          |
 | z4ml            | 6            | 5           |
 
-We discovered something interesting, The differences for results of `twocm` are huge. When our goal is to minimize edge cutsize, the edge cutsize and net cutsize are optimized to 1. However wen our goal is to minimize net cutsize, the optimal net cutsize we get is 12.
+We discovered something interesting, The differences for results of `twocm` are huge. When our goal is to minimize edge cutsize, the edge cutsize and net cutsize are optimized to 1. However when our goal is to minimize net cutsize, the optimal net cutsize we get is 12.
 
 ![image-20210313104602015](A3 Partition.assets/image-20210313104602015.png)
 
