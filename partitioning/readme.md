@@ -1,5 +1,21 @@
 # A3 Branch and Bound Partitioning
 
+## Run the Programme
+
+under folder `partitioning`
+
+```python
+python  partition
+```
+
+## Test
+
+under folder `partitioning`
+
+```python
+python -m pytest calc_edge_cutsize_test.py
+```
+
 ## Summary
 
 In this assignment, Kernighan-Lin algorithm is implemented to do bi-partitioning. We optimize partitioning to minimizing the number of nets crosses partition. We also optimize partitioning to minimizing the number of edges crosses partition. Both of the results are presented in the `Results` part.
