@@ -10,20 +10,19 @@ import numpy as np
 
 
 def plot(filename, best_cutsize, best_assignment):
+    """plot best assignment using matplot
+    """
     fig, ax = plt.subplots()
     ax.set_title('''benchmark file: {}, net cutsize: {}'''.format(filename[:3], best_cutsize))
     # hide ticks
     ax.set_xticks([])
     ax.set_yticks([])
     ax.axis('off')
-    # rect = patches.Rectangle((0, 0), 300, 300, linewidth = 2, edgecolor = 'black', fill = "blue")
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
-    # ax.tick_params(right= False,top= False,left= False, bottom= False)
-    # ax.spines['left'].set_position('center')
     ax.set_aspect('equal')
     ax.autoscale_view()
 
@@ -37,15 +36,15 @@ def plot(filename, best_cutsize, best_assignment):
     m = [[np.nan] * (2 * num_cols + 1) for _ in range(num_rows)]
 
     node_coord = [None]*num_nodes
-    for node in left:
-        i = node % num_rows
-        j = node % num_cols
+    for idx, node in enumerate(left):
+        i = idx % num_rows
+        j = idx % num_cols
         m[i][j] = node
         node_coord[node] = [i,j]
         ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize="large")
-    for node in right:
-        i = node % num_rows
-        j = node % num_cols + num_cols + 1
+    for idx, node in enumerate(right):
+        i = idx % num_rows
+        j = idx % num_cols + num_cols + 1
         m[i][j] = node
         node_coord[node] = [i,j]
         ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize = "large")
@@ -59,6 +58,9 @@ def plot(filename, best_cutsize, best_assignment):
             y = [node_coord[src][1], node_coord[sink][1]]
             ax.plot(y, x)
     plt.show()
+
+    # save figure
+    fig.savefig("figs/" + filename[:3])
 
 
 
