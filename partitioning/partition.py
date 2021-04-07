@@ -4,6 +4,7 @@ import math
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
+from collections import deque
 def random_partition():
     """ set random partition
     randomly assign nodes to block 0 and 1
@@ -123,7 +124,7 @@ def rollback_to_saved_partition(partition_copy, edges_copy):
     edge_cutsize_text.set(chip.cutsize)
     
 
-def partition(num_passes = 5):
+def kl_partition(num_passes = 5):
     print(chip.graph_id)
     # random_partition()
     chip.blocks[0].clear_block()
@@ -163,6 +164,24 @@ def partition(num_passes = 5):
     load_btn.state(['disabled'])
     partition_btn.state(['disabled'])
     print(chip)
+
+# # branch and bound
+# def bb_partition():
+#     q = deque()  # assignemnt, cost, 
+#     chip.blocks[0].clear_block()
+#     chip.blocks[1].clear_block()
+#     init_gains()
+#     chip.net_cutsize = chip.calc_net_cutsize()
+#     chip.min_cutsize = chip.net_cutsize()
+#     chip.best_partition_copy = chip.save_partition()
+#     node = select_node()
+#     q.append(chip.blocks, chip.min_cutsize, node)
+#     while q:
+#         curr_partition, min_cutsize, node = q.popleft()
+#         tmp_cost = chip.calc_net_cutsize()
+#         if (tmp_cost < min_cutsize):
+#             rollback_to_saved_partition(chip.partition_copy())
+
 
 class GUI:
     def init_canvas(self):
