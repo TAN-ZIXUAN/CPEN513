@@ -11,10 +11,11 @@ import numpy as np
 
 def plot(filename, best_cutsize, best_assignment):
     fig, ax = plt.subplots()
-    ax.set_title("{} cutsize:{}".format(filename, best_cutsize))
+    ax.set_title('''benchmark file: {}, net cutsize: {}'''.format(filename[:3], best_cutsize))
     # hide ticks
     ax.set_xticks([])
     ax.set_yticks([])
+    ax.axis('off')
     # rect = patches.Rectangle((0, 0), 300, 300, linewidth = 2, edgecolor = 'black', fill = "blue")
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
@@ -41,13 +42,13 @@ def plot(filename, best_cutsize, best_assignment):
         j = node % num_cols
         m[i][j] = node
         node_coord[node] = [i,j]
-        ax.text(j, i, str(m[i][j]), va='center', ha='center')
+        ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize="large")
     for node in right:
         i = node % num_rows
         j = node % num_cols + num_cols + 1
         m[i][j] = node
         node_coord[node] = [i,j]
-        ax.text(j, i, str(m[i][j]), va='center', ha='center')
+        ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize = "large")
     ax.matshow(m)
 
     for net in netlist:
@@ -148,10 +149,11 @@ def select_next_node(curr_node):
     elif curr_node + 1 == num_nodes:
         return None
 
-
+def bb_partition():
+    pass
 
 def recursive_bb_partition(curr_assignment, node_to_assign, min_cutsize): 
-    """Branch and Bound partition
+    """Branch and Bound partition (recursivw)
     Args:
         curr_assignment: assignment array eg. [[node1, node2,..],[node3, node4,...]]
         node_to_assignment: a number represent the node to assign
@@ -165,8 +167,6 @@ def recursive_bb_partition(curr_assignment, node_to_assign, min_cutsize):
             best_cutsize = curr_cutsize
             best_assignment = curr_assignment
         print("best assignment: {}, current min_cutsize: {}".format(best_assignment, min_cutsize))
-        # net_cutsize_text.set(best_cutsize)
-        # gui.draw_canvas()
 
     else:
         tmp_cutsize = cal_net_cutsize(curr_assignment)
