@@ -40,7 +40,7 @@ def plot(filename, best_cutsize, best_assignment):
 
     left = best_assignment[0]
     right = best_assignment[1]
-    max_nodes_per_side = num_nodes // 2 + 2
+    max_nodes_per_side = num_nodes
     num_rows = max_nodes_per_side if max_nodes_per_side <= 16 else math.ceil(math.sqrt(max_nodes_per_side))
     num_cols = 1 if max_nodes_per_side <= 16 else math.ceil(max_nodes_per_side / num_rows) + 1
     m = [[np.nan] * (2 * num_cols + 1) for _ in range(num_rows)]
@@ -139,6 +139,15 @@ def consol_menu(select_list):
     # menu = SelectionMenu(list_files(), "Select a benchmark file")
     return SelectionMenu.get_selection(select_list, title="Select a benchmark file")
 
+
+def cal_fitness(genome, population):
+    population_sort_by_cutsize = sorted(population, key=cal_unfitness)
+    worst = population_sort_by_cutsize[-1]
+    best = population_sort_by_cutsize[0]
+    worst_cutsize = cal_unfitness(worst)
+    best_cutsize = cal_unfitness(best)
+    fitness = (worst_cutsize - cal_unfitness(genome)) + (worst_cutsize - best_cutsize) / 3
+    return fitness
 def cal_net_cutsize(assignment):
     """ calculate the net cutsize of current assignment 
     Args: 
@@ -211,7 +220,7 @@ def mutation(genome, num = 1, prob = 0.5):
 
     return genome
 
-def select_pairs(population, unfitness_func):
+def select_pairs(population, fitness_func):
     """
     randomly select the 2 genome population (weighted by fitness)
     Args:
@@ -220,8 +229,8 @@ def select_pairs(population, unfitness_func):
     Returns:
         a pair of genome [genome1, genome2]
     """
-    unfitnesses = [unfitness_func(genome) for genome in population]
-    return random.choices(population=population, weights=[sum(unfitnesses)/unfitness for unfitness in unfitnesses], k=2)
+    weights = [fitness_func(genome, population) for genome in population]
+    return random.choices(population=population, weights=weights, k=2)
 
 def cal_unfitness(genome):
     """calculate the unfitness of the genome. 
@@ -272,8 +281,8 @@ def print_stats(population, generation_id, fitness_func):
 
 def run_evolution(
     populate_func,
-    unfitness_func,
-    unfitness_limit,
+    fitness_func,
+    # unfitness_limit,
     selection_func,
     crossoer_func,
     mutation_func,
@@ -282,7 +291,7 @@ def run_evolution(
     Args:
         pupulated_func: function for generating population
         unfitness_func: function for calculating unfitness(cutsize)
-        unfitness_limit: the limit of unfitness(cutsize). we exit evolution if we reach the fitness limit(best unfitness(best cutsize) <= unfitness_limit)
+        # unfitness_limit: the limit of unfitness(cutsize). we exit evolution if we reach the fitness limit(best unfitness(best cutsize) <= unfitness_limit)
         selection_func: function for selecting a pair of mates from population
         mutation_func: function for mutation
         generation_limit: the number of generation we want to go through
@@ -295,18 +304,18 @@ def run_evolution(
 
     for i in range(generation_limit):
         # sort population. fitness from high to low
-        population = sorted(population, key=unfitness_func)
+        population = sorted(population, key= lambda genome : cal_fitness(genome, population))
 
         # check if it reaches the fitness limit
-        if unfitness_func(population[0]) <= unfitness_limit:
-            break
+        # if fitness_func(population[0]) <= unfitness_limit:
+        #     break
         
         # pick the best two from population as the part of the next generation
         next_generation = population[0:2]
 
         for _ in range(len(population) // 2 - 1):
             # pick two to do crossover and mutation to generate next generation
-            parents = selection_func(population, unfitness_func)
+            parents = selection_func(population, fitness_func)
             # crossover
             kids_a, kids_b = crossoer_func(*parents)
             # mutation
@@ -334,7 +343,7 @@ if __name__ == "__main__":
     
     parse_file(filepath)
 
-    final_population = run_evolution(generate_population, cal_unfitness, 0, select_pairs, single_point_crossover, mutation, 100)
+    final_population = run_evolution(generate_population, cal_fitness, select_pairs, single_point_crossover, mutation, 1000)
     final_population.sort(key=cal_unfitness)
     best_genome = final_population[0]
     best_assignment = generate_assignment(best_genome)
