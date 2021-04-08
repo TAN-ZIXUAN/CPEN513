@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from consolemenu import SelectionMenu
 import numpy as np
+from collections import defaultdict
 # from simple_term_menu import TerminalMenu  # not support windows
 
 
@@ -13,7 +14,7 @@ def plot(filename, best_cutsize, best_assignment):
     """plot best assignment using matplot
     """
     fig, ax = plt.subplots()
-    ax.set_title('''benchmark file: {}, net cutsize: {}'''.format(filename[:3], best_cutsize))
+    ax.set_title('''benchmark file: {}, net cutsize: {}'''.format(filename[:-4], best_cutsize))
     # hide ticks
     ax.set_xticks([])
     ax.set_yticks([])
@@ -36,18 +37,20 @@ def plot(filename, best_cutsize, best_assignment):
     m = [[np.nan] * (2 * num_cols + 1) for _ in range(num_rows)]
 
     node_coord = [None]*num_nodes
-    for idx, node in enumerate(left):
-        i = idx % num_rows
-        j = idx % num_cols
-        m[i][j] = node
-        node_coord[node] = [i,j]
-        ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize="large")
-    for idx, node in enumerate(right):
-        i = idx % num_rows
-        j = idx % num_cols + num_cols + 1
-        m[i][j] = node
-        node_coord[node] = [i,j]
-        ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize = "large")
+    if left:
+        for idx, node in enumerate(left):
+            i = idx // num_cols
+            j = idx % num_cols
+            m[i][j] = node
+            node_coord[node] = [i,j]
+            ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize="large")
+    if right:
+        for idx, node in enumerate(right):
+            i = idx // num_cols
+            j = idx % num_cols + num_cols + 1
+            m[i][j] = node
+            node_coord[node] = [i,j]
+            ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize = "large")
     ax.matshow(m)
 
     for net in netlist:
@@ -60,7 +63,7 @@ def plot(filename, best_cutsize, best_assignment):
     plt.show()
 
     # save figure
-    fig.savefig("figs/" + filename[:3])
+    fig.savefig("figs/" + filename[:-4])
 
 
 
@@ -85,6 +88,9 @@ def parse_file(filepath):
                     nodes.append(node_id)
 
                 netlist.append(nodes)
+    print(filepath)
+    print("netlist",netlist)
+    print("num_nodes", num_nodes)
 
 def is_net_cut(net, assignment):
     """if the current net is cut
@@ -192,88 +198,6 @@ def recursive_bb_partition(curr_assignment, node_to_assign, min_cutsize):
 
 
 
-
-
-class GUI:
-    def init_canvas(self):
-        self.node_rects = [None] * num_nodes # store each node's rectangle
-        canvas.delete(ALL)
-        net_cutsize_text.set('-')
-        self.rdim = 25 # rectangle dimensions
-        self.node_pad = 5 # padding between node rectangles
-        self.x_pad = 50 # padding in x coordinate between partitions
-        self.y_pad = 10 # padding from top and bottom of canvas
-        max_cells_per_block = (num_nodes // 2) + 2
-        if max_cells_per_block > 25:
-            self.num_rows = math.ceil(math.sqrt(max_cells_per_block))
-            self.num_cols = math.ceil(max_cells_per_block / self.num_rows)
-        else:
-            self.num_rows = max_cells_per_block
-            self.num_cols = 1
-        self.cw = 2 * (2*self.x_pad + self.num_cols*self.rdim + (self.num_cols - 1)*self.node_pad)
-        # print("185 cw", cw)
-        self.ch = 2*self.y_pad + self.num_rows*self.rdim + (self.num_rows - 1)*self.node_pad
-        canvas.config(width=self.cw, height=self.ch)
-
-    def draw_nodes(self):
-        """Redraw nodes in each block."""
-        rh = rw = self.rdim
-        x = [self.x_pad, self.cw//2 + self.x_pad]
-        y = [self.y_pad, self.y_pad]
-        node_cnt = [0, 0]
-        left = best_assignment[0]
-        right = best_assignment[1]
-        for node in left:
-            x1 = x[0]
-            x2 = x1 + rw
-            y1 = y[0]
-            y2 = y1 + rh
-            self.node_rects[node] = canvas.create_rectangle(x1, y1, x2, y2, fill = "purple")
-            node_cnt[0] += 1
-            if node_cnt[0] % self.num_rows == 0:
-                x[0] = x2 + self.node_pad
-                y[0] = self.y_pad
-            else:
-                x[0] = x1
-                y[0] = y2 + self.node_pad
-
-        for node in right:
-            x1 = x[1]
-            x2 = x1 + rw
-            y1 = y[1]
-            y2 = y1 + rh
-            self.node_rects[node] = canvas.create_rectangle(x1, y1, x2, y2, fill = "blue")
-            node_cnt[1] += 1
-            if node_cnt[0] % self.num_rows == 0:
-                x[1] = x2 + self.node_pad
-                y[1] = self.y_pad
-            else:
-                x[1] = x1
-                y[1] = y2 + self.node_pad
-
-    def draw_nets(self):
-        for net in netlist:
-            source = net[0]
-            x1, y1 = self.get_rect_center(source)
-            for sink in net[1:]:
-                x2, y2 = self.get_rect_center(sink)
-                canvas.create_line(x1, y1, x2, y2, fill="red")
-    def draw_canvas(self):
-
-        canvas.delete(ALL)
-
-        # init_canvas()
-        self.draw_nodes()
-        self.draw_nets()
-        # edge_cutsize_text.set(chip.cutsize)
-        net_cutsize_text.set(best_cutsize)
-
-    def get_rect_center(self, node):
-        x1, y1, x2, y2 = canvas.coords(self.node_rects[node]) # get rect coords
-        center_x = (x1 + x2) // 2
-        center_y = (y1 + y2) // 2
-        return (center_x, center_y)
-
 def list_files(directory="ass3_files/"):
     file_list =  [file for file in os.listdir(directory) if os.path.isfile(os.path.join(directory, file))]
     return file_list
@@ -300,6 +224,8 @@ if __name__ == "__main__":
     best_assignment = []
     # initial assignment, node to assign and cutsize
     assignment = [[], []]  # todo using dictionary to save time
+    # assignment = defaultdict(int)
+    best_assignment = assignment
     node_to_assign = 0
     best_cutsize = num_nets # initial min_cutsize
 

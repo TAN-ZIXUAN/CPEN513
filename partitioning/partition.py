@@ -163,24 +163,65 @@ def kl_partition(num_passes = 5):
     print("best partition")
     load_btn.state(['disabled'])
     partition_btn.state(['disabled'])
-    print(chip)
+    # print(chip)
+    chip.get_best_assignment_array()
+    print(chip.best_assignment)
 
-# # branch and bound
-# def bb_partition():
-#     q = deque()  # assignemnt, cost, 
-#     chip.blocks[0].clear_block()
-#     chip.blocks[1].clear_block()
-#     init_gains()
-#     chip.net_cutsize = chip.calc_net_cutsize()
-#     chip.min_cutsize = chip.net_cutsize()
-#     chip.best_partition_copy = chip.save_partition()
-#     node = select_node()
-#     q.append(chip.blocks, chip.min_cutsize, node)
-#     while q:
-#         curr_partition, min_cutsize, node = q.popleft()
-#         tmp_cost = chip.calc_net_cutsize()
-#         if (tmp_cost < min_cutsize):
-#             rollback_to_saved_partition(chip.partition_copy())
+    
+
+
+def plot(filename, best_cutsize, best_assignment):
+    """plot best assignment using matplot
+    """
+    fig, ax = plt.subplots()
+    ax.set_title('''benchmark file: {}, net cutsize: {}'''.format(filename[:3], best_cutsize))
+    # hide ticks
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.axis('off')
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.set_aspect('equal')
+    ax.autoscale_view()
+
+
+
+    left = best_assignment[0]
+    right = best_assignment[1]
+    max_nodes_per_side = num_nodes // 2 + 2
+    num_rows = max_nodes_per_side if max_nodes_per_side <= 16 else math.ceil(math.sqrt(max_nodes_per_side))
+    num_cols = 1 if max_nodes_per_side <= 16 else math.ceil(max_nodes_per_side / num_rows) + 1
+    m = [[np.nan] * (2 * num_cols + 1) for _ in range(num_rows)]
+
+    node_coord = [None]*num_nodes
+    for idx, node in enumerate(left):
+        i = idx % num_rows
+        j = idx % num_cols
+        m[i][j] = node
+        node_coord[node] = [i,j]
+        ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize="large")
+    for idx, node in enumerate(right):
+        i = idx % num_rows
+        j = idx % num_cols + num_cols + 1
+        m[i][j] = node
+        node_coord[node] = [i,j]
+        ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize = "large")
+    ax.matshow(m)
+
+    for net in netlist:
+        src = net[0]
+        sinks = net[1:]
+        for sink in sinks:
+            x = [node_coord[src][0], node_coord[sink][0]]
+            y = [node_coord[src][1], node_coord[sink][1]]
+            ax.plot(y, x)
+    plt.show()
+
+    # save figure
+    fig.savefig("figs/" + filename[:3])
 
 
 class GUI:
@@ -309,7 +350,7 @@ if __name__ == "__main__":
     # setup button frame (contains buttons)
     load_btn = ttk.Button(btn_frame, text="load file", command=load_file_button)
     load_btn.grid(column=0, row=0, padx=5, pady=5)
-    partition_btn = ttk.Button(btn_frame, text="partition", command=partition)
+    partition_btn = ttk.Button(btn_frame, text="partition", command=kl_partition)
     partition_btn.grid(column=1, row=0, padx=5, pady=5)
     partition_btn.state(['disabled'])
 

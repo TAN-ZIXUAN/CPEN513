@@ -46,6 +46,7 @@ class Chip:
         self.min_cutsize = None
         self.best_partition_copy = None
         self.blocks = [Block(), Block()]
+        self.best_assignment = [[],[]]
 
     def __str__(self):
         s = """{}
@@ -53,6 +54,13 @@ class Chip:
         block1:{}
         """.format(self.cutsize, self.blocks[0], self.blocks[1])
         return s
+
+    def get_best_assignment_array(self):
+        block0 = self.blocks[0]
+        block1 = self.blocks[1]
+        self.best_assignment[0] = [node.node_id  for node in block0.nodes]
+        self.best_assignment[1] = [node.node_id  for node in block1.nodes]
+
 
     def clear_blocks(self):
         self.blocks = [Block(), Block()]
