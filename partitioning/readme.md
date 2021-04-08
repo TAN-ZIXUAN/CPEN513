@@ -23,6 +23,7 @@ In this assignment, Kernighan-Lin algorithm is implemented to do bi-partitioning
 ([GitHub repository](https://github.com/TAN-ZIXUAN/CPEN513/tree/main/partitioning))
 
 ## Algorithm
+
 ### Kernighan-Lin /  Fiduccia-Matheyses
 
 Kernighan-Lin algorithm is implemented to do bi-partitioning. 
@@ -112,18 +113,19 @@ We use `tkinker` to select benchmark files and represent final partition result.
 ## Results
 
 1. minimize the nets crosses partition
+
 | benchmark files | net cutsize | edge cutsize |
-| --------------- | ------------ | ----------- |
-| cc              | 8          | 23        |
-| cm82a           | 1           | 2          |
-| cm138a          | 4          | 11         |
-| cm150a          | 6          | 14         |
-| cm162a          | 8          | 15        |
-| con1            | 4           | 6          |
-| twocm           | 12           | 26         |
-| ugly8           | 8          | 15         |
-| ugly16          | 16         | 64        |
-| z4ml            | 4           | 6          |
+| --------------- | ----------- | ------------ |
+| cc              | 8           | 23           |
+| cm82a           | 1           | 2            |
+| cm138a          | 4           | 11           |
+| cm150a          | 6           | 14           |
+| cm162a          | 8           | 15           |
+| con1            | 4           | 6            |
+| twocm           | 12          | 26           |
+| ugly8           | 8           | 15           |
+| ugly16          | 16          | 64           |
+| z4ml            | 4           | 6            |
 
 
 1. minimize the edges crosses partition
@@ -143,5 +145,5 @@ We use `tkinker` to select benchmark files and represent final partition result.
 
 We discovered something interesting, The differences for results of `twocm` are huge. When our goal is to minimize edge cutsize, the edge cutsize and net cutsize are optimized to 1. However when our goal is to minimize net cutsize, the optimal net cutsize we get is 12.
 
-<img src="A3 Partition.assets/image-20210313104602015.png" alt="image-20210313104602015" style="zoom: 75%;" /><img src="A3 Partition.assets/image-20210313105745687.png" alt="image-20210313105745687" style="zoom: 75%;" />
+<img src="report/A3 Partition.assets/image-20210313104602015.png" alt="image-20210313104602015" style="zoom: 75%;" /><img src="report/A3 Partition.assets/image-20210313105745687.png" alt="image-20210313105745687" style="zoom: 75%;" />
 
