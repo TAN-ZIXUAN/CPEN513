@@ -1,5 +1,23 @@
 # A3 Branch and Bound Partitioning
 
+## Running
+
+1. partition with the initial cutsize set to `len(netlist) + 1`
+
+   ```python
+   python partition.py
+   ```
+
+   
+
+2. generate some random assignments and select the best among them to be the initial best solution.
+
+   ```python
+   python partition2.py
+   ```
+
+   
+
 ## Summary
 
 In this assignment, Branch and Bound algorithm is implemented to do bi-partitioning. For large benchmark files like `cc` and `twocm`, Kernighan-Lin algorithm is implemented to do fast bi-partitioning.
@@ -135,53 +153,53 @@ We use  `matplotlib` to plot the final partition result.
 minimize the nets crosses partition
 
 | benchmark files | net cutsize |
-| --------------- | ------------ |
-| cc              | 5         |
+| --------------- | ----------- |
+| cc              | 5           |
 | cm82a           | 1           |
-| cm138a          | 4          |
-| cm150a          | 6          |
-| cm162a          | 6         |
+| cm138a          | 4           |
+| cm150a          | 6           |
+| cm162a          | 6           |
 | con1            | 4           |
 | twocm           | 1           |
-| ugly8           | 8          |
-| ugly16          | 16         |
-| z4ml            | 3          |
+| ugly8           | 8           |
+| ugly16          | 16          |
+| z4ml            | 3           |
 
 1. `cc`
 
-   ![cc](A3 Partition.assets/cc.png)
+   ![cc](readme.assets/cc.png)
 
 2. `cm82a`
 
-   ![cm82a](A3 Partition.assets/cm82a.png)
+   ![cm82a](readme.assets/cm82a.png)
 
 3. `cm138a`
 
-   ![cm138a](A3 Partition.assets/cm138a-1617844660066.png)
+   ![cm138a](readme.assets/cm138a-1617844660066.png)
 
 4. `cm150a`
 
-   ![cm150a](A3 Partition.assets/cm150a.png)
+   ![cm150a](readme.assets/cm150a.png)
 
 5. `cm162a`
 
-   ![cm162a](A3 Partition.assets/cm162a.png)
+   ![cm162a](readme.assets/cm162a.png)
 
 6. `con1`
 
-   ![con1](A3 Partition.assets/con1.png)
+   ![con1](readme.assets/con1.png)
 
 7. `twocm`
 
-   ![twocm](A3 Partition.assets/twocm.png)
+   ![twocm](readme.assets/twocm.png)
 
 8. `ugly8`
 
-   ![ugly16](A3 Partition.assets/ugly16.png)
+   ![ugly16](readme.assets/ugly16.png)
 
 9. `ugly16`
 
-   ![ugly16](A3 Partition.assets/ugly16-1617844799507.png)
+   ![ugly16](readme.assets/ugly16-1617844799507.png)
 
 10. `z4ml`
 
