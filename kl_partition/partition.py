@@ -170,7 +170,11 @@ def kl_partition(num_passes = 10):
     chip.get_best_assignment_array()
     print(chip.best_assignment)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     plot(str(filename), chip.netlist_id, chip.num_nodes, chip.best_assignment, chip.min_cutsize)
+=======
+    # plot(str(filename), chip.netlist, chip.num_nodes, chip.best_assignment, chip.min_cutsize)
+>>>>>>> Stashed changes
 =======
     # plot(str(filename), chip.netlist, chip.num_nodes, chip.best_assignment, chip.min_cutsize)
 >>>>>>> Stashed changes
