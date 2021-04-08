@@ -265,19 +265,6 @@ def sort_population(population, unfitness_func):
 def genome_to_string(genome):
     return "".join(map(str, genome))
 
-def print_stats(population, generation_id, fitness_func):
-    print("GENERATION %02d" % generation_id)
-    print("=============")
-    print("Population: [%s]" % ", ".join([genome_to_string(gene) for gene in population]))
-    print("Avg. Fitness: %f" % (population_fitness(population, fitness_func) / len(population)))
-    sorted_population = sort_population(population, fitness_func)
-    print(
-        "Best: %s (%f)" % (genome_to_string(sorted_population[0]), fitness_func(sorted_population[0])))
-    print("Worst: %s (%f)" % (genome_to_string(sorted_population[-1]),
-                              fitness_func(sorted_population[-1])))
-    print("")
-
-    return sorted_population[0]
 
 def run_evolution(
     populate_func,
@@ -303,9 +290,11 @@ def run_evolution(
     population = populate_func(size=10, genome_length=num_nodes)
 
     for i in range(generation_limit):
+        
         # sort population. fitness from high to low
         population = sorted(population, key= lambda genome : cal_fitness(genome, population))
-
+        print("generation", i)
+        print("population", population)
         # check if it reaches the fitness limit
         # if fitness_func(population[0]) <= unfitness_limit:
         #     break
@@ -344,7 +333,7 @@ if __name__ == "__main__":
     parse_file(filepath)
 
     final_population = run_evolution(generate_population, cal_fitness, select_pairs, single_point_crossover, mutation, 1000)
-    final_population.sort(key=cal_unfitness)
+    final_population.sort(key= cal_unfitness)
     best_genome = final_population[0]
     best_assignment = generate_assignment(best_genome)
     best_cutsize = cal_net_cutsize(best_assignment)
