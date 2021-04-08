@@ -130,7 +130,7 @@ minimize the nets crosses partition
 
 | benchmark files | net cutsize |
 | --------------- | ------------ |
-| cc              | 5         |
+| cc              | 4        |
 | cm82a           | 1           |
 | cm138a          | 4          |
 | cm150a          | 6          |
@@ -143,7 +143,7 @@ minimize the nets crosses partition
 
 1. `cc`
 
-   ![cc](A3 Partition.assets/cc.png)
+   ![cc](A3 Partition.assets/cc-1617866617069.png)
 
 2. `cm82a`
 
@@ -171,7 +171,7 @@ minimize the nets crosses partition
 
 8. `ugly8`
 
-   ![ugly16](A3 Partition.assets/ugly16.png)
+   ![ugly8](A3 Partition.assets/ugly8.png)
 
 9. `ugly16`
 

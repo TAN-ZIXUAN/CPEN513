@@ -20,7 +20,7 @@
 
 ## Summary
 
-In this assignment, Branch and Bound algorithm is implemented to do bi-partitioning. For large benchmark files like `cc` and `twocm`, Kernighan-Lin algorithm is implemented to do fast bi-partitioning.
+In this assignment, Branch and Bound algorithm is implemented to do bi-partitioning. For large benchmark files like`twocm`, Kernighan-Lin algorithm is implemented to do fast bi-partitioning.
 
 The results are presented in the `Results` part.
 
@@ -81,7 +81,7 @@ As this algorithm has exponential time complexity, it takes a very long time to 
 
 ### Kernighan-Lin /  Fiduccia-Matheyses
 
-Kernighan-Lin algorithm is implemented to do bi-partitioning.  It is implemented for fast partitioning for benchmark files `twocm`, `cc`. However, Kernighan-Lin does not guarantee us a optimal result. I ran it multiply times to get a relatively good partition for `twocm` and `cc` .
+Kernighan-Lin algorithm is implemented to do bi-partitioning.  It is implemented for fast partitioning for benchmark files `twocm`. However, Kernighan-Lin does not guarantee us a optimal result. I ran it multiply times to get a relatively good partition for `twocm`.
 
 We use max heap queue to stores the unlocked nodes so that we can get or pop the nodes with the  highest gain. 
 
@@ -148,7 +148,7 @@ minimize the nets crosses partition
 
 | benchmark files | net cutsize |
 | --------------- | ----------- |
-| cc              | 5           |
+| cc              | 4           |
 | cm82a           | 1           |
 | cm138a          | 4           |
 | cm150a          | 6           |
@@ -161,7 +161,7 @@ minimize the nets crosses partition
 
 1. `cc`
 
-   ![cc](readme.assets/cc.png)
+   ![cc](readme.assets/cc-1617866647352.png)
 
 2. `cm82a`
 
@@ -189,7 +189,7 @@ minimize the nets crosses partition
 
 8. `ugly8`
 
-   ![ugly16](readme.assets/ugly16.png)
+   ![ugly8](readme.assets/ugly8.png)
 
 9. `ugly16`
 
