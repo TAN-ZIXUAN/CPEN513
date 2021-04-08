@@ -17,7 +17,13 @@ so a chromesome stands for the distribution of pins in two groups
 population is a list of chromesomes, aka many kinds of solution
 we want evolve a solution that minimize the cutsize
 """
-# todo using priorityqueue to store a population of chromesomes instead of normal list
+"""
+todo optimize the data structure used in algorithm
+todo 1. using numpy instead of normal list in python. numpy is faster. 
+todo 2. using priority q to represent population to save time complexity waste on sorting in every iteration
+todo 3. tunning hyper parameters. size of the population and generation times and exit criteria (exit when cutsize <= 0)
+"""
+ 
 
 def plot(filename, best_cutsize, best_assignment):
     """plot best assignment using matplot
