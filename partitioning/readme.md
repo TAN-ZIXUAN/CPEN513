@@ -5,7 +5,7 @@
 under folder `partitioning`
 
 ```python
-python  partition
+python  partition.py
 ```
 
 ## Test
@@ -109,41 +109,3 @@ Test is passed.
 ## GUI
 
 We use `tkinker` to select benchmark files and represent final partition result.
-
-## Results
-
-1. minimize the nets crosses partition
-
-| benchmark files | net cutsize | edge cutsize |
-| --------------- | ----------- | ------------ |
-| cc              | 8           | 23           |
-| cm82a           | 1           | 2            |
-| cm138a          | 4           | 11           |
-| cm150a          | 6           | 14           |
-| cm162a          | 8           | 15           |
-| con1            | 4           | 6            |
-| twocm           | 12          | 26           |
-| ugly8           | 8           | 15           |
-| ugly16          | 16          | 64           |
-| z4ml            | 4           | 6            |
-
-
-1. minimize the edges crosses partition
-
-| benchmark files | edge cutsize | net cutsize |
-| --------------- | ------------ | ----------- |
-| cc              | 18           | 10          |
-| cm82a           | 2            | 1           |
-| cm138a          | 15           | 9           |
-| cm150a          | 11           | 7           |
-| cm162a          | 15           | 10          |
-| con1            | 6            | 4           |
-| twocm           | 1            | 1           |
-| ugly8           | 15           | 8           |
-| ugly16          | 63           | 16          |
-| z4ml            | 6            | 5           |
-
-We discovered something interesting, The differences for results of `twocm` are huge. When our goal is to minimize edge cutsize, the edge cutsize and net cutsize are optimized to 1. However when our goal is to minimize net cutsize, the optimal net cutsize we get is 12.
-
-<img src="report/A3 Partition.assets/image-20210313104602015.png" alt="image-20210313104602015" style="zoom: 75%;" /><img src="report/A3 Partition.assets/image-20210313105745687.png" alt="image-20210313105745687" style="zoom: 75%;" />
-
