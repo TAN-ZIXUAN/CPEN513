@@ -47,6 +47,7 @@ class Chip:
         self.best_partition_copy = None
         self.blocks = [Block(), Block()]
         self.best_assignment = [[],[]]
+        self.netlist_id = []
 
     def __str__(self):
         s = """{}
@@ -196,15 +197,17 @@ class Chip:
                         self.buid_graph(u_node, v_node)
                         self.build_graph_id(u_node_id, v_node_id)
                         self.buid_edges(u_node, v_node)
-                        
+                    nodes = []    
                     for item in line[1:]:
                         node_id = int(item)
                         node = self.node_list[node_id]
                         # print(node.__str__())
                         node.nets.append(net)
                         net.nodes.append(node)
-
+                        nodes.append(node_id)
+                    
                     self.netlist.append(net)
+                    self.netlist_id.append(nodes)
 
 
 

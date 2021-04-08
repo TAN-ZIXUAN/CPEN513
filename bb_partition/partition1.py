@@ -10,7 +10,7 @@ from collections import defaultdict
 # from simple_term_menu import TerminalMenu  # not support windows
 
 """
-this is the branch and bound parition with "worst" intial best assignment(cutsize = len(netlist) + 1)
+this is the branch and bound parition with random assignment as intial best assignment
 """
 
 def plot(filename, best_cutsize, best_assignment):
@@ -92,33 +92,7 @@ def parse_file(filepath):
     print(filepath)
     print("netlist",netlist)
     print("num_nodes", num_nodes)
-
-# def is_net_cut(net, assignment):
-#     """if the current net is cut
-#     Args: 
-#         net: an array with nodes in current net [node1, node2, node3]
-#         assignment: current assignment
-#     Return:
-#         True if the net is cut (nodes appears in both left and right assignment)
-#         False: net is not cut (all nodes are in a single side of the assignment)
-#     """
-#     left_cnt = 0
-#     right_cnt = 0
-#     left_assignment = assignment[0]
-#     right_assignment = assignment[1]
-#     if all(node in left_assignment for node in net) or all(node in right_assignment for node in net):
-#         return False
-#     else:
-#         return True
-#     # for node in net:
-#     #     if left_cnt >= 1 and right_cnt >= 1: # stop checking the rest of nodes if the net is already cut
-#     #         return True
-#     #     # check left
-#     #     if node in left_assignment:
-#     #         left_cnt += 1
-#     #     elif node in right_assignment:
-#     #         right_cnt += 1
-#     # return (left_cnt and right_cnt)
+    print("num_nets", len(netlist))
 
 def cal_net_cutsize(assignment):
     """ calculate the net cutsize of current assignment 
@@ -134,6 +108,20 @@ def cal_net_cutsize(assignment):
         if set(net).intersection(left) and set(net).intersection(right):
             cutsize += 1
     return cutsize
+def random_assignment(num_nodes):
+    """return a random assignment
+    """
+    assignment = [[], []]
+    for i in range(num_nodes):
+        block = random.choice([0, 1])
+        assignment[block].append(i)
+
+    # random_nodelist = random.sample(range(num_nodes), num_nodes)
+    # for i, node_id in enumerate(random_nodelist):
+    #     block_id = random.choice([0, 1])
+    return assignment
+
+
 
 def check_partition(assignment, partition):
     """check if if we can place node in current side of partition. 
@@ -226,13 +214,14 @@ if __name__ == "__main__":
     parse_file(filepath)
 
     # for storing best assignment
-    best_assignment = []
+    best_assignment = random_assignment(num_nodes)
+    best_cutsize = cal_net_cutsize(best_assignment) # initial min_cutsize
     # initial assignment, node to assign and cutsize
     assignment = [[], []]  # todo using dictionary to save time
     # assignment = defaultdict(int)
     # best_assignment = assignment
     node_to_assign = 0
-    best_cutsize = num_nets + 1 # initial min_cutsize
+    
 
     recursive_bb_partition(assignment, node_to_assign, best_cutsize)
 

@@ -2,15 +2,24 @@
 
 ## Summary
 
-In this assignment, Branch and Bound Partitioning as well as Kernighan-Lin algorithm are implemented to do bi-partitioning. We optimize partitioning to minimizing the number of nets crosses partition. We also optimize partitioning to minimizing the number of edges crosses partition. Both of the results are presented in the `Results` part.
+In this assignment, Branch and Bound algorithm is implemented to do bi-partitioning. For large benchmark files like `cc` and `twocm`, Kernighan-Lin algorithm is implemented to do fast bi-partitioning.
 
-([GitHub repository](https://github.com/TAN-ZIXUAN/CPEN513/tree/main/partitioning))
+The results are presented in the `Results` part.
+
+([GitHub repository for Kernighan-Lin partitioning](https://github.com/TAN-ZIXUAN/CPEN513/tree/main/partitioning))
+
+()
 
 ## Algorithm
 
 ### Branch and Bound Algorithm
 
-Branch and bound algorithm guarantees us the optimal result. We set the initial best cutsize to be a big and impossible value, which is the total number of nets plus one.
+Branch and bound algorithm guarantees us the optimal result. There are two ways to set the initial best solution
+
+1. set the initial best cutsize to be a very big impossible value, which can be the number of netlist plus one
+2. generate some random assignments and select the best among them to be the initial best solution.
+
+The second methods can fast the partition process a little bit as we often start with a relatively good partition with a small cutsize. But it does not help a lot when we encounter big benchmark files such as `twocm` and `cc`.
 
 Here is the main code which implements the branch and bound partition algorithm in a recursive way.
 
@@ -54,7 +63,7 @@ As this algorithm has exponential time complexity, it takes a very long time to 
 
 ### Kernighan-Lin /  Fiduccia-Matheyses
 
-Kernighan-Lin algorithm is implemented to do bi-partitioning.  It is implemented for fast partitioning for benchmark files `twocm`, `cc`
+Kernighan-Lin algorithm is implemented to do bi-partitioning.  It is implemented for fast partitioning for benchmark files `twocm`, `cc`. However, Kernighan-Lin does not guarantee us a optimal result. I ran it multiply times to get a relatively good partition for `twocm` and `cc` .
 
 We use max heap queue to stores the unlocked nodes so that we can get or pop the nodes with the  highest gain. 
 
@@ -119,7 +128,7 @@ Test is passed.
 
 ## GUI
 
-We use  `matplotlib` to plot the final partition result
+We use  `matplotlib` to plot the final partition result.
 
 ## Results
 
@@ -127,18 +136,20 @@ minimize the nets crosses partition
 
 | benchmark files | net cutsize |
 | --------------- | ------------ |
-| cc              | 8          |
+| cc              | 5         |
 | cm82a           | 1           |
 | cm138a          | 4          |
 | cm150a          | 6          |
 | cm162a          | 6         |
 | con1            | 4           |
-| twocm           | 12           |
+| twocm           | 1           |
 | ugly8           | 8          |
 | ugly16          | 16         |
 | z4ml            | 3          |
 
 1. `cc`
+
+   ![cc](A3 Partition.assets/cc.png)
 
 2. `cm82a`
 
@@ -150,15 +161,19 @@ minimize the nets crosses partition
 
 4. `cm150a`
 
+   ![cm150a](A3 Partition.assets/cm150a.png)
+
 5. `cm162a`
 
    ![cm162a](A3 Partition.assets/cm162a.png)
-   
+
 6. `con1`
 
    ![con1](A3 Partition.assets/con1.png)
 
 7. `twocm`
+
+   ![twocm](A3 Partition.assets/twocm.png)
 
 8. `ugly8`
 

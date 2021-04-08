@@ -127,7 +127,7 @@ def rollback_to_saved_partition(partition_copy, edges_copy):
     edge_cutsize_text.set(chip.cutsize)
     
 
-def kl_partition(num_passes = 5):
+def kl_partition(num_passes = 10):
     print(chip.graph_id)
     # random_partition()
     chip.blocks[0].clear_block()
@@ -153,8 +153,8 @@ def kl_partition(num_passes = 5):
             node = select_node()
             move_node(node)
             # print("move node {} to {}".format(node.node_id, node.block_id))
-            # chip.cutsize = chip.calc_cutsize()
             chip.net_cutsize = chip.calc_net_cutsize()
+            # chip.net_cutsize = chip.calc_net_cutsize()
             # chip.cutsize -= node.gain
             # node.gain = -node.gain
             if chip.net_cutsize >= 0 and chip.net_cutsize < chip.min_cutsize:
@@ -169,7 +169,7 @@ def kl_partition(num_passes = 5):
     # print(chip)
     chip.get_best_assignment_array()
     print(chip.best_assignment)
-    plot(str(filename), chip.netlist, chip.num_nodes, chip.best_assignment, chip.min_cutsize)
+    plot(str(filename), chip.netlist_id, chip.num_nodes, chip.best_assignment, chip.min_cutsize)
 
     
 
@@ -178,7 +178,7 @@ def plot(filename, netlist, num_nodes, best_assignment, best_cutsize):
     """plot best assignment using matplot
     """
     fig, ax = plt.subplots()
-    ax.set_title('''benchmark file: {}, net cutsize: {}'''.format(filename[:-4], best_cutsize))
+    ax.set_title('''net cutsize: {}'''.format(best_cutsize))
     # hide ticks
     ax.set_xticks([])
     ax.set_yticks([])
@@ -306,9 +306,11 @@ def load_file_button():
     # chip = Chip()
     file = filedialog.askopenfilename(initialdir="ass3_files/",filetypes=(("Text File", "*.txt"),("All Files","*.*")), title="choose a file")
     print("load file:", file)
+    
     if not file:
         return
-
+    benchmarkfile = file
+    print("benchmarkfile", benchmarkfile)
     # logging.info("loading file:{file}".format(file=file))
     chip.parse_chip_file(file)
 
@@ -320,14 +322,15 @@ def load_file_button():
 
 
 if __name__ == "__main__":
-    random.seed(0)
+    # random.seed(0)
     chip = Chip()
     # chip.parse_chip_file("ass3_files/cm82a.txt")
     # print(chip.graph_id)
 
-    
+    netlist = []
     root = Tk()
     root.title("Partition")
+    benchmarkfile = None
     
     
 
