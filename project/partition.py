@@ -70,6 +70,12 @@ def plot(filename, best_cutsize, best_assignment):
 
 
 def parse_file(filepath):
+    """ parse benchmarkfile
+        store info of netlist, num_nodes(number of nodes), num_nets(number of nets)
+
+    Args: 
+        filepath: filepath of benchmark file
+    """
     global netlist, num_nodes, num_nets
     # init netlist
     netlist = []
@@ -193,9 +199,20 @@ def recursive_bb_partition(curr_assignment, node_to_assign, min_cutsize):
 
 
 def list_files(directory="ass3_files/"):
+    """ return a list of files under the directory
+    Args:
+        directory: the directory where files exist
+    Returns:
+        return a list of files under the directory. files are represented by their filename 
+    """
     file_list =  [file for file in os.listdir(directory) if os.path.isfile(os.path.join(directory, file))]
     return file_list
 def consol_menu(select_list):
+    """create a selection menu for selecting benchmark file in the console
+    Args:
+        select_list: a list of option for user to select from
+    Returns: return the index of the selected item in the select_list
+    """
     # menu = SelectionMenu(list_files(), "Select a benchmark file")
     return SelectionMenu.get_selection(select_list, title="Select a benchmark file")
 
