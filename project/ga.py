@@ -275,7 +275,7 @@ def chromesome_to_string(chromesome):
 def run_evolution(
     populate_func,
     fitness_func,
-    # unfitness_limit,
+    unfitness_limit,
     selection_func,
     crossoer_func,
     mutation_func,
@@ -284,7 +284,7 @@ def run_evolution(
     Args:
         pupulated_func: function for generating population
         unfitness_func: function for calculating unfitness(cutsize)
-        # unfitness_limit: the limit of unfitness(cutsize). we exit evolution if we reach the fitness limit(best unfitness(best cutsize) <= unfitness_limit)
+        unfitness_limit: the limit of unfitness(cutsize). we exit evolution if we reach the fitness limit(best unfitness(best cutsize) <= unfitness_limit)
         selection_func: function for selecting a pair of mates from population
         mutation_func: function for mutation
         generation_limit: the number of generation we want to go through
@@ -300,10 +300,10 @@ def run_evolution(
         # sort population. fitness from high to low
         population = sorted(population, key= lambda chromesome : cal_fitness(chromesome, population))
         print("generation", i)
-        print("population", population)
+        # print("population", population)
         # check if it reaches the fitness limit
-        # if fitness_func(population[0]) <= unfitness_limit:
-        #     break
+        if cal_unfitness(population[0]) <= unfitness_limit:
+            break
         
         # pick the best two from population as the part of the next generation
         next_generation = population[0:2]
@@ -338,7 +338,7 @@ if __name__ == "__main__":
     
     parse_file(filepath)
 
-    final_population = run_evolution(generate_population, cal_fitness, select_pairs, single_point_crossover, mutation, 100)
+    final_population = run_evolution(generate_population, cal_fitness, 0, select_pairs, single_point_crossover, mutation, 100)
     final_population.sort(key= cal_unfitness)
     best_chromesome = final_population[0]
     best_assignment = generate_assignment(best_chromesome)
