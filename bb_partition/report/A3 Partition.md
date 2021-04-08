@@ -92,17 +92,11 @@ When moving nodes, we also update gains of all the nodes that connects to the ou
 
 ### Net cut size
 
-We also calculated the net cut size. The net cut size stores the number of net which crosses partition.
+We calculated the net cut size. The net cut size stores the number of net which crosses partition.
 
 ### Node gain
 
-1. minimizing net cutsize
-
-   For every net that the node connect to, we increase gain if the node is the only node which makes the net crosses partition. We decrease gain if the all of the nodes in the net is in the same block.
-
-2. minimizing edge cutsize
-
-   We traverse the edges that the node connects to. We increase gain if the edge crosses partition and decrease gain if the edge does not crosses partition
+For every net that the node connect to, we increase gain if the node is the only node which makes the net crosses partition. We decrease gain if the all of the nodes in the net is in the same block.
 
 
 ## Test
