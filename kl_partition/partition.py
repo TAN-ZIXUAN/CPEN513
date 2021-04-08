@@ -1,6 +1,9 @@
 from chip import Chip
 import random
 import math
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import numpy as np
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
@@ -166,15 +169,16 @@ def kl_partition(num_passes = 5):
     # print(chip)
     chip.get_best_assignment_array()
     print(chip.best_assignment)
+    plot(str(filename), chip.netlist, chip.num_nodes, chip.best_assignment, chip.min_cutsize)
 
     
 
 
-def plot(filename, best_cutsize, best_assignment):
+def plot(filename, netlist, num_nodes, best_assignment, best_cutsize):
     """plot best assignment using matplot
     """
     fig, ax = plt.subplots()
-    ax.set_title('''benchmark file: {}, net cutsize: {}'''.format(filename[:3], best_cutsize))
+    ax.set_title('''benchmark file: {}, net cutsize: {}'''.format(filename[:-4], best_cutsize))
     # hide ticks
     ax.set_xticks([])
     ax.set_yticks([])
@@ -198,13 +202,13 @@ def plot(filename, best_cutsize, best_assignment):
 
     node_coord = [None]*num_nodes
     for idx, node in enumerate(left):
-        i = idx % num_rows
+        i = idx // num_cols 
         j = idx % num_cols
         m[i][j] = node
         node_coord[node] = [i,j]
         ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize="large")
     for idx, node in enumerate(right):
-        i = idx % num_rows
+        i = idx // num_cols
         j = idx % num_cols + num_cols + 1
         m[i][j] = node
         node_coord[node] = [i,j]
@@ -221,7 +225,7 @@ def plot(filename, best_cutsize, best_assignment):
     plt.show()
 
     # save figure
-    fig.savefig("figs/" + filename[:3])
+    fig.savefig("figs/" + filename[:-4])
 
 
 class GUI:

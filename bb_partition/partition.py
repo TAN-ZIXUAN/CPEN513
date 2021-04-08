@@ -37,20 +37,18 @@ def plot(filename, best_cutsize, best_assignment):
     m = [[np.nan] * (2 * num_cols + 1) for _ in range(num_rows)]
 
     node_coord = [None]*num_nodes
-    if left:
-        for idx, node in enumerate(left):
-            i = idx // num_cols
-            j = idx % num_cols
-            m[i][j] = node
-            node_coord[node] = [i,j]
-            ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize="large")
-    if right:
-        for idx, node in enumerate(right):
-            i = idx // num_cols
-            j = idx % num_cols + num_cols + 1
-            m[i][j] = node
-            node_coord[node] = [i,j]
-            ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize = "large")
+    for idx, node in enumerate(left):
+        i = idx // num_cols
+        j = idx % num_cols
+        m[i][j] = node
+        node_coord[node] = [i,j]
+        ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize="large")
+    for idx, node in enumerate(right):
+        i = idx // num_cols
+        j = idx % num_cols + num_cols + 1
+        m[i][j] = node
+        node_coord[node] = [i,j]
+        ax.text(j, i, str(m[i][j]), va='center', ha='center', fontsize = "large")
     ax.matshow(m)
 
     for net in netlist:
@@ -225,9 +223,9 @@ if __name__ == "__main__":
     # initial assignment, node to assign and cutsize
     assignment = [[], []]  # todo using dictionary to save time
     # assignment = defaultdict(int)
-    best_assignment = assignment
+    # best_assignment = assignment
     node_to_assign = 0
-    best_cutsize = num_nets # initial min_cutsize
+    best_cutsize = num_nets + 1 # initial min_cutsize
 
     recursive_bb_partition(assignment, node_to_assign, best_cutsize)
 
