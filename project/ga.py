@@ -9,15 +9,15 @@ import numpy as np
 from collections import defaultdict
 # https://github.com/kiecodes/genetic-algorithms/blob/master/algorithms/genetic.py
 """
-genome is a list of 0 and 1. represent a possible solution.
+chromesome is a list of 0 and 1. represent a possible solution.
 0 and 1 stands for left and right part of the assignment.
 idx stands for the node number.
-so a genome stands for the distribution of pins in two groups
+so a chromesome stands for the distribution of pins in two groups
 
-population is a list of genomes, aka many kinds of solution
+population is a list of chromesomes, aka many kinds of solution
 we want evolve a solution that minimize the cutsize
 """
-# todo using priorityqueue to store a population of genomes instead of normal list
+# todo using priorityqueue to store a population of chromesomes instead of normal list
 
 def plot(filename, best_cutsize, best_assignment):
     """plot best assignment using matplot
@@ -103,10 +103,10 @@ def parse_file(filepath):
     print("num_nodes", num_nodes)
     print("num_nets", len(netlist))
 
-def generate_assignment(genome):
-    """generated the assignment represented by genome
+def generate_assignment(chromesome):
+    """generated the assignment represented by chromesome
     Args:
-        genome: a list of 0 and 1. represent a possible solution.
+        chromesome: a list of 0 and 1. represent a possible solution.
         0 and 1 stands for left and right part of the assignment.
         idx stands for the node number.
     Returns:
@@ -114,7 +114,7 @@ def generate_assignment(genome):
     """
     left = []
     right = []
-    for i, gene in enumerate(genome):
+    for i, gene in enumerate(chromesome):
         if gene == 0:
             left.append(i)
         elif gene == 1:
@@ -140,13 +140,13 @@ def consol_menu(select_list):
     return SelectionMenu.get_selection(select_list, title="Select a benchmark file")
 
 
-def cal_fitness(genome, population):
+def cal_fitness(chromesome, population):
     population_sort_by_cutsize = sorted(population, key=cal_unfitness)
     worst = population_sort_by_cutsize[-1]
     best = population_sort_by_cutsize[0]
     worst_cutsize = cal_unfitness(worst)
     best_cutsize = cal_unfitness(best)
-    fitness = (worst_cutsize - cal_unfitness(genome)) + (worst_cutsize - best_cutsize) / 3
+    fitness = (worst_cutsize - cal_unfitness(chromesome)) + (worst_cutsize - best_cutsize) / 3
     return fitness
 def cal_net_cutsize(assignment):
     """ calculate the net cutsize of current assignment 
@@ -163,37 +163,37 @@ def cal_net_cutsize(assignment):
         if set(net).intersection(left) and set(net).intersection(right):
             cutsize += 1
     return cutsize
-def generate_genome(length):
-    """ using random.choices generate genome list(a list of genes(0 or 1))
+def generate_chromesome(length):
+    """ using random.choices generate chromesome list(a list of genes(0 or 1))
     Args: 
-        length: the length of the genome list. it should be the same as the pin numbers
+        length: the length of the chromesome list. it should be the same as the pin numbers
     
     Returns:
-        genome: a generated genome list consists of 0 and 1
+        chromesome: a generated chromesome list consists of 0 and 1
     """
 
     return random.choices([0, 1], k = length)
 
-def generate_population(size, genome_length):
-    """Population: List[genome]
+def generate_population(size, chromesome_length):
+    """Population: List[chromesome]
     Args: 
         size: size of the population (the length of population list)
-        genome_length: the length of a genome list
+        chromesome_length: the length of a chromesome list
     Returns:
-        population: List[genome]
+        population: List[chromesome]
     """
-    return [generate_genome(genome_length) for _ in range(size)]
+    return [generate_chromesome(chromesome_length) for _ in range(size)]
 
 def single_point_crossover(a, b):
-    """ crossover of two genomes 
+    """ crossover of two chromesomes 
         a(a1, a2), b(b1, b2) => a(a1, b2), b(b1, a2)
     Args:
-        a, b: two genomes of the same size
+        a, b: two chromesomes of the same size
     Returns：
-        genome a, b after single-point crossover
+        chromesome a, b after single-point crossover
     """
     if len(a) != len(b):
-        raise ValueError("Genomes a and b should be of the same length")
+        raise ValueError("chromesomes a and b should be of the same length")
 
     length = len(a)
     if length < 2:
@@ -204,57 +204,57 @@ def single_point_crossover(a, b):
     return a[0:p] + b[p:], b[0:p] + a[p:]
 
 
-def mutation(genome, num = 1, prob = 0.5):
-    """mutation of a genome with mutation probability to be prob.
+def mutation(chromesome, num = 1, prob = 0.5):
+    """mutation of a chromesome with mutation probability to be prob.
         
     Args:
-        genome: genmoe to be mutated
-        num: number of genes on genome to be mutated
+        chromesome: genmoe to be mutated
+        num: number of genes on chromesome to be mutated
         prob: mutation probability
     Returns:
-        return a genome after mutation
+        return a chromesome after mutation
     """
     for _ in range(num):
-        idx = random.randrange(len(genome))
-        genome[idx] = genome[idx] if random.random() > prob else abs(genome[idx] - 1)
+        idx = random.randrange(len(chromesome))
+        chromesome[idx] = chromesome[idx] if random.random() > prob else abs(chromesome[idx] - 1)
 
-    return genome
+    return chromesome
 
 def select_pairs(population, fitness_func):
     """
-    randomly select the 2 genome population (weighted by fitness)
+    randomly select the 2 chromesome population (weighted by fitness)
     Args:
-        population: a list of genome
-        fitness_func: function for calculating fitness of genome
+        population: a list of chromesome
+        fitness_func: function for calculating fitness of chromesome
     Returns:
-        a pair of genome [genome1, genome2]
+        a pair of chromesome [chromesome1, chromesome2]
     """
-    weights = [fitness_func(genome, population) for genome in population]
+    weights = [fitness_func(chromesome, population) for chromesome in population]
     return random.choices(population=population, weights=weights, k=2)
 
-def cal_unfitness(genome):
-    """calculate the unfitness of the genome. 
+def cal_unfitness(chromesome):
+    """calculate the unfitness of the chromesome. 
     it is actually the function to calculate net cutsize. 
     Args:
-        genome: genome is a list of 0 and 1. represent a possible solution.
+        chromesome: chromesome is a list of 0 and 1. represent a possible solution.
                 0 and 1 stands for left and right part of the assignment.
                 idx stands for the node number.
-                so a genome stands for the distribution of pins in two groups
-    Return: fitness(negated cutsize) of the genome.
+                so a chromesome stands for the distribution of pins in two groups
+    Return: fitness(negated cutsize) of the chromesome.
     """
-    assignment = generate_assignment(genome)
+    assignment = generate_assignment(chromesome)
     return cal_net_cutsize(assignment)
 
 
 def population_unfitness(population, unfitness_func):
     """ calc the unfitness of population with the unfitness_func
     Args:
-        population: population List[genome]
-        unfitness_func: fitness function input: genome, output: unfitness value(net cutsize)
+        population: population List[chromesome]
+        unfitness_func: fitness function input: chromesome, output: unfitness value(net cutsize)
     Returns:
-        the sum of genome fitness inside this population
+        the sum of chromesome fitness inside this population
     """
-    return sum([unfitness_func(genome) for genome in population])
+    return sum([unfitness_func(chromesome) for chromesome in population])
 
 def sort_population(population, unfitness_func):
     """ sort population with the fitness value
@@ -262,8 +262,8 @@ def sort_population(population, unfitness_func):
     """
     return sorted(population, key=unfitness_func)
 
-def genome_to_string(genome):
-    return "".join(map(str, genome))
+def chromesome_to_string(chromesome):
+    return "".join(map(str, chromesome))
 
 
 def run_evolution(
@@ -287,12 +287,12 @@ def run_evolution(
     """
 
     #generate population
-    population = populate_func(size=10, genome_length=num_nodes)
+    population = populate_func(size=10, chromesome_length=num_nodes)
 
     for i in range(generation_limit):
         
         # sort population. fitness from high to low
-        population = sorted(population, key= lambda genome : cal_fitness(genome, population))
+        population = sorted(population, key= lambda chromesome : cal_fitness(chromesome, population))
         print("generation", i)
         print("population", population)
         # check if it reaches the fitness limit
@@ -334,8 +334,8 @@ if __name__ == "__main__":
 
     final_population = run_evolution(generate_population, cal_fitness, select_pairs, single_point_crossover, mutation, 1000)
     final_population.sort(key= cal_unfitness)
-    best_genome = final_population[0]
-    best_assignment = generate_assignment(best_genome)
+    best_chromesome = final_population[0]
+    best_assignment = generate_assignment(best_chromesome)
     best_cutsize = cal_net_cutsize(best_assignment)
     print('''
     FINAL best assignment: {}
