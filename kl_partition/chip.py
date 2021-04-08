@@ -173,7 +173,7 @@ class Chip:
                     self.num_connections = int(line[1])
                     # assign block numbers:
                     random_nodelist = random.sample(range(self.num_nodes), self.num_nodes)
-                    for i, node_id in enumerate(random_nodelist):
+                    for _, node_id in enumerate(random_nodelist):
                         node = self.node_list[node_id]
                         node.block_id = random.choice([0, 1])# randomly(also equally) assign them block 0 or 1
 
