@@ -203,4 +203,4 @@ minimize the nets crosses partition
 
 10. `z4ml`
 
-    ![z4ml](A3 Partition.assets/z4ml.png)
+    ![z4ml](readme.assets/z4ml.png)
