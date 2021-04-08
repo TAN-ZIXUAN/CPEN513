@@ -287,7 +287,7 @@ def run_evolution(
     """
 
     #generate population
-    population = populate_func(size=10, chromesome_length=num_nodes)
+    population = populate_func(size=100, chromesome_length=num_nodes)
 
     for i in range(generation_limit):
         
@@ -306,11 +306,11 @@ def run_evolution(
             # pick two to do crossover and mutation to generate next generation
             parents = selection_func(population, fitness_func)
             # crossover
-            kids_a, kids_b = crossoer_func(*parents)
+            offspring_a, offspring_b = crossoer_func(*parents)
             # mutation
-            kids_a = mutation_func(kids_a)
-            kids_b = mutation_func(kids_b)
-            next_generation.extend([kids_a, kids_b])
+            offspring_a = mutation_func(offspring_a)
+            offspring_b = mutation_func(offspring_b)
+            next_generation.extend([offspring_a, offspring_b])
         
         # update population
         population = next_generation
@@ -332,7 +332,7 @@ if __name__ == "__main__":
     
     parse_file(filepath)
 
-    final_population = run_evolution(generate_population, cal_fitness, select_pairs, single_point_crossover, mutation, 1000)
+    final_population = run_evolution(generate_population, cal_fitness, select_pairs, single_point_crossover, mutation, 100)
     final_population.sort(key= cal_unfitness)
     best_chromesome = final_population[0]
     best_assignment = generate_assignment(best_chromesome)
