@@ -10,4 +10,4 @@
 
 3 it give me great result when I make the population size larger(10 -> 100), and generation time is 100. but it is really slow. it took a long time for small benchmark file like `cm82a`
 
-![cm82a](report_draft.assets/cm82a-1617922145841.png)
+![cm82a](report_draft.assets/cm150a.png)
