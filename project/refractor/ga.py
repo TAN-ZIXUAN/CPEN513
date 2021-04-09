@@ -4,6 +4,48 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from consolemenu import SelectionMenu
+import math
+
+def is_balanced(chromosome):
+    """ check the if partition represented by chromosome is balanced
+
+    balance: the difference between the amount of 1s and 0s should be at most 1.
+
+    Args:
+        chromosome
+    Returns:
+        true if the chromosome is balanced
+        false if the chromosome is unbalanced
+    """
+    
+    return abs(np.count_nonzero(chromosome) - len(chromosome) // 2) <= 1
+
+def adjust(chromosome):
+    """ adjust gene values of chromosome to make it balance
+
+    mutate genes until it's balanced
+
+    Args:
+        chromosome
+    """
+
+    num_ones = np.count_nonzero(chromosome)
+    num_zeros = len(chromosome) - num_ones
+    zero_indices = [i for i in range(len(chromosome)) if chromosome[i] == 0]
+    one_indices = [i for i in range(len(chromosome)) if chromosome[i] == 1]
+    num_adjustment = len(chromosome) // 2 - min(num_ones, num_zeros) 
+    if num_ones < num_zeros:
+        # we need more one => flip zero to one
+        index_list = np.random.choice(zero_indices, size=num_adjustment, replace=False)
+        for idx in index_list:
+            chromosome[idx] = 1
+    elif num_ones > num_zeros:
+        # we need more zero => flip one to zero
+        index_list = np.random.choice(one_indices, size=num_adjustment, replace=False)
+        for idx in index_list:
+            chromosome[idx] = 0
+
+
 
 def plot(filename, best_cutsize, best_assignment):
     """plot best assignment using matplot
@@ -26,7 +68,7 @@ def plot(filename, best_cutsize, best_assignment):
 
     left = best_assignment[0]
     right = best_assignment[1]
-    max_nodes_per_side = num_nodes
+    max_nodes_per_side = num_nodes // 2 + 2
     num_rows = max_nodes_per_side if max_nodes_per_side <= 16 else math.ceil(math.sqrt(max_nodes_per_side))
     num_cols = 1 if max_nodes_per_side <= 16 else math.ceil(max_nodes_per_side / num_rows) + 1
     m = [[np.nan] * (2 * num_cols + 1) for _ in range(num_rows)]
@@ -99,6 +141,7 @@ def list_files(directory="ass3_files/"):
     """
     file_list =  [file for file in os.listdir(directory) if os.path.isfile(os.path.join(directory, file))]
     return file_list
+
 def console_menu(select_list):
     """create a selection menu for selecting benchmark file in the console
     Args:
@@ -144,7 +187,7 @@ def generate_assignment(chromosome):
     return [left, right]   
 
 def generate_chromosome(length):
-    """ generate and return a chromosome list(a list of genes(0 or 1)) with given length
+    """ generate and return a balanced chromosome list(a list of genes(0 or 1)) with given length
 
 using np.randint to generate chromosome 1d array
 
@@ -154,8 +197,10 @@ using np.randint to generate chromosome 1d array
     Returns:
         chromosome: a generated chromosome list consists of 0 and 1
     """
-
-    return np.random.randint(2, size=length)
+    chromosome = [0] * (length // 2) + [1] * (length - length//2)
+    chromosome = np.asarray(chromosome)
+    np.random.shuffle(chromosome)
+    return chromosome
 
 def generate_population(size, chromosome_length):
     """generate and return a population 1d array.
@@ -170,6 +215,18 @@ def generate_population(size, chromosome_length):
     """
     population = [generate_chromosome(chromosome_length) for _ in range(size)]
     return np.array(population)
+
+def crossover_with_complement(a, b):
+    """single point crossover with complement. return two offspring after crossover of chromosome a and b
+    
+    given chromosome a and b with crossover point to p devides each of them to two part a[a1:a2] b[b1:b2]
+    offspring_a = [a1:b2]
+    offspring_b = [a1: complement of b2]
+    """
+    p = random.randint(0, len(a) - 1) # a random crossover point
+    a_new = np.append(a[:p], b[p:])
+    b_new = np.append(a[:p], 1 - b[p:])
+    return a_new, b_new
 
 def single_point_crossover(a, b):
     """ single point crossover of two chromosomes 
@@ -190,7 +247,7 @@ def single_point_crossover(a, b):
         return a, b
 
     # pick a random position to do crossover
-    p = random.randint(1, length - 1) # a random crossover point
+    p = random.randint(0, length - 1) # a random crossover point
     a_new = np.append(a[:p], b[p:])
     b_new = np.append(b[:p], a[p:])
     return a_new, b_new
@@ -266,6 +323,7 @@ def population_fitness(population, fitness_func):
     return sum([fitness_func(chromosome) for chromosome in population])
 
 def ga(
+    population_size,
     populate_func,
     fitness_func,
     cutsize_limit,
@@ -278,6 +336,7 @@ def ga(
     run evolution and return the final population after evolution
     
     Args:
+        population_size: size of population
         pupulated_func: function for generating population
         unfitness_func: function for calculating unfitness(cutsize)
         cutsize_limit: the limit of cutsize. we exit evolution if we reach the limit(best cutsize <= unfitness_limit)
@@ -288,14 +347,13 @@ def ga(
     Returns:
         final population after evolution
     """
-    population = populate_func(size=50, chromosome_length=num_nodes)
+    population = populate_func(size=population_size, chromosome_length=num_nodes)
 
     for i in range(generation_limit):
         
         # sort population. fitness from high to low
         population = sorted(population, key= lambda chromosome : calc_fitness(chromosome, population))
         print("generation", i)
-        # print("population", population)
 
         # stop looping if cutsize <= cutsize_limit (default is 0)
         if calc_chromo_cutsize(population[0]) <= cutsize_limit:
@@ -312,6 +370,8 @@ def ga(
             # mutation
             offspring_a = mutation_func(offspring_a)
             offspring_b = mutation_func(offspring_b)
+            if not is_balanced(offspring_a): adjust(offspring_a)
+            if not is_balanced(offspring_b): adjust(offspring_b)
             next_generation.extend([offspring_a, offspring_b])
         
         # update population
@@ -335,6 +395,7 @@ if __name__ == "__main__":
     parse_file(filepath)
 
     final_population = ga(
+        population_size=10,
         populate_func=generate_population,
         fitness_func=calc_fitness,
         cutsize_limit=0,
@@ -343,8 +404,8 @@ if __name__ == "__main__":
         mutation_func=mutation,
         generation_limit=100)
     final_population.sort(key= calc_chromo_cutsize)
-    best_chromesome = final_population[0]
-    best_assignment = generate_assignment(best_chromesome)
+    best_chromosome = final_population[0]
+    best_assignment = generate_assignment(best_chromosome)
     best_cutsize = calc_net_cutsize(best_assignment)
     print('''
     FINAL best assignment: {}
