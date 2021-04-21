@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from consolemenu import SelectionMenu
 import math
+from collections import Counter
+
+# todo stopping criteria: stop when 80% of the chromosome has same fitness.
 
 def is_balanced(chromosome):
     """ check the if partition represented by chromosome is balanced
@@ -17,8 +20,10 @@ def is_balanced(chromosome):
         true if the chromosome is balanced
         false if the chromosome is unbalanced
     """
+    num_ones = np.count_nonzero(chromosome)
+    num_zeros = len(chromosome) - num_ones
     
-    return abs(np.count_nonzero(chromosome) - len(chromosome) // 2) <= 1
+    return abs(num_ones - num_zeros) <= 1
 
 def adjust(chromosome):
     """ adjust gene values of chromosome to make it balance
@@ -45,9 +50,7 @@ def adjust(chromosome):
         for idx in index_list:
             chromosome[idx] = 0
 
-
-
-def plot(filename, best_cutsize, best_assignment):
+def partition_visualizetion(filename, best_cutsize, best_assignment):
     """plot best assignment using matplot
     """
     fig, ax = plt.subplots()
@@ -99,6 +102,29 @@ def plot(filename, best_cutsize, best_assignment):
 
     # save figure
     fig.savefig("figs/" + filename[:-4])
+
+def line_chart(mincuts, fitnesses, population_size, filename,):
+    """plot line chart for mincut and fitness value per iteration
+    reference: https://matplotlib.org/devdocs/gallery/subplots_axes_and_figures/subplots_demo.html
+    """
+    if len(mincuts) != len(fitnesses):
+        raise ValueError("plot error. mincuts and fitnesses should be the same length")
+
+    iterations = range(len(mincuts))
+    fig, (ax1, ax2) = plt.subplots(1, 2) # two subplots mincut and fitness
+    fig.suptitle(filename)
+    # ax1: mincut plot
+    ax1.set_title("mincut plot")
+    ax1.plot(iterations, mincuts)
+    ax1.set(xlabel="iterations", ylabel="mincut")
+
+    # ax1: mincut plot
+    ax2.set_title("fitness plot")
+    ax2.plot(iterations, fitnesses)
+    ax2.set(xlabel="iterations", ylabel="fitness")
+
+    plt.show()
+    fig.savefig("figs/" + "{}_line_chart".format(filename))
 
 def parse_file(filepath):
     """ parse benchmarkfile
@@ -322,14 +348,43 @@ def population_fitness(population, fitness_func):
     """
     return sum([fitness_func(chromosome) for chromosome in population])
 
+def exit_criterion(population, cutsize_limit=0):
+    """ return True if at least 80% of chromosome has same fitness or min cutsize <= cutsize_upper_limit
+    1. fitness criteria
+    create a list of fitness and using collections.Counter count fitness occurrence.
+    return True if the most common makes up >= 80% of the population size
+    2. cutsize criteria
+    return True if min cutsize <= cutsize_limit
+    Args:
+        population population List[chromosome]
+    Returns:
+        True: the population meet the exit criterion
+        False: the population does not meet the exit criterion
+    """
+    fitnesses = [calc_fitness(chromosome, population) for chromosome in population]
+    size = len(population)
+    counter = Counter(fitnesses)
+    top = counter.most_common(1)[0][1] # ex. [(5.333333333333334, 6)]
+
+    population_sort_by_cutsize = sorted(population, key=calc_chromo_cutsize) # cutsize from low to high
+    chromosome_mincut = population_sort_by_cutsize[0]
+    min_cutsize = calc_chromo_cutsize(chromosome_mincut)
+    
+    if top >= 0.8 * size or min_cutsize <= cutsize_limit:
+        return True
+    else:
+        return False
+
+
 def ga(
     population_size,
     populate_func,
     fitness_func,
-    cutsize_limit,
     selection_func,
     crossover_func,
     mutation_func,
+    exit_criterion_func,
+    cutsize_limit,
     generation_limit=100):
     """ genetic algorithm
     
@@ -343,24 +398,38 @@ def ga(
         crossover_func: function for crossover between two chromosome
         selection_func: function for selecting a pair of mates from population
         mutation_func: function for mutation
+        exit_criterion_func: function for exit criterion
+        cutsize_limit: cutsize limit used in exit criterion function
         generation_limit: the number of generation we want to go through
     Returns:
         final population after evolution
     """
     population = populate_func(size=population_size, chromosome_length=num_nodes)
+    global mincuts, fitnesses # for plotting
+    # empty lists first
+    mincuts = []
+    fitnesses = []
 
     for i in range(generation_limit):
         
         # sort population. fitness from high to low
-        population = sorted(population, key= lambda chromosome : calc_fitness(chromosome, population))
-        print("generation", i)
+        # population.sort(key= lambda chromosome : calc_fitness(chromosome, population), reverse=True)
+        population = sorted(population, key= lambda chromosome : calc_fitness(chromosome, population), reverse=True)
+        best_fitness = calc_fitness(population[0], population)
+        population_mincut = sorted(population, key=calc_chromo_cutsize)
+        best_cutsize = calc_chromo_cutsize(population_mincut[0])
+        fitnesses.append(best_fitness)
+        mincuts.append(best_cutsize)
 
-        # stop looping if cutsize <= cutsize_limit (default is 0)
-        if calc_chromo_cutsize(population[0]) <= cutsize_limit:
+        print("generation:{}, fit:{}, cutsize:{}".format(i, best_fitness, best_cutsize))
+
+        # stop looping if  we meet the exit criterion
+        if exit_criterion_func(population, cutsize_limit):
             break
         
         # pick the best two from population as the part of the next generation
         next_generation = population[0:2]
+        # next_generation = [population[0]]
 
         for _ in range(len(population) // 2 - 1):
             # pick two to do crossover and mutation to generate next generation
@@ -378,6 +447,13 @@ def ga(
         population = next_generation
     
     # return the final population after evolving
+    # final sort
+    population = sorted(population, key= lambda chromosome : calc_fitness(chromosome, population), reverse=True)
+    best_fitness = calc_fitness(population[0], population)
+    population_mincut = sorted(population, key=calc_chromo_cutsize)
+    best_cutsize = calc_chromo_cutsize(population_mincut[0])
+    fitnesses.append(best_fitness)
+    mincuts.append(best_cutsize)
     return population
 
 if __name__ == "__main__":
@@ -385,6 +461,9 @@ if __name__ == "__main__":
     netlist = []
     num_nets = 0
     num_nodes = 0
+
+    mincuts = []
+    fitnesses = []
     
     # for terminal menu
     directory = "ass3_files/"
@@ -394,15 +473,20 @@ if __name__ == "__main__":
     
     parse_file(filepath)
 
+    # hyper parameters
+    population_size = 20
+    generation_limit = 50
+
     final_population = ga(
-        population_size=10,
+        population_size=population_size,
         populate_func=generate_population,
         fitness_func=calc_fitness,
-        cutsize_limit=0,
         selection_func=select_pairs,
-        crossover_func=single_point_crossover,
+        crossover_func=crossover_with_complement,
         mutation_func=mutation,
-        generation_limit=100)
+        exit_criterion_func=exit_criterion,
+        cutsize_limit=0,
+        generation_limit=generation_limit)
     final_population.sort(key= calc_chromo_cutsize)
     best_chromosome = final_population[0]
     best_assignment = generate_assignment(best_chromosome)
@@ -412,4 +496,6 @@ if __name__ == "__main__":
     best_cutsize: {}
     '''.format(best_assignment, best_cutsize))
     # print("netlist", netlist)
-    plot(filename, best_cutsize, best_assignment)
+    partition_visualizetion(filename, best_cutsize, best_assignment)
+    line_chart(mincuts, fitnesses, population_size, filename[:-4])
+

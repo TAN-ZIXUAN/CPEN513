@@ -81,3 +81,21 @@ can maintain a high diversity for a long time and consequently can get good solu
 ## pre-processing
 
 haven’t figure out this part yet
+
+
+
+## notes
+
+experiment with different hyperparameters population size, iteration times,
+
+draw the best cutsize of each generation 折线图
+
+mincut plot and fitness plot similar to [paper](http://www.ijcee.org/papers/136.pdf)
+
+pick some benchmark files to create stacked plot like this?
+
+I am going to just plot for each benchmark file right now
+
+
+
+and also change the mutation prob like table 4.2 in this paper
