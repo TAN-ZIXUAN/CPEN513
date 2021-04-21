@@ -99,3 +99,6 @@ I am going to just plot for each benchmark file right now
 
 
 and also change the mutation prob like table 4.2 in this paper
+
+
+I found that small population with large generation works faster and better

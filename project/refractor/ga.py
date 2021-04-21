@@ -50,11 +50,12 @@ def adjust(chromosome):
         for idx in index_list:
             chromosome[idx] = 0
 
-def partition_visualizetion(filename, best_cutsize, best_assignment):
+def partition_visualizetion(filename, best_cutsize, best_assignment, population_size, generation_limit):
     """plot best assignment using matplot
     """
     fig, ax = plt.subplots()
     ax.set_title('''benchmark file: {}, net cutsize: {}'''.format(filename[:-4], best_cutsize))
+    
     # hide ticks
     ax.set_xticks([])
     ax.set_yticks([])
@@ -101,9 +102,9 @@ def partition_visualizetion(filename, best_cutsize, best_assignment):
     plt.show()
 
     # save figure
-    fig.savefig("figs/" + filename[:-4])
+    fig.savefig("figs/{}_{}_{}".format(filename[:-4], population_size, generation_limit))
 
-def line_chart(mincuts, fitnesses, population_size, filename,):
+def line_chart(mincuts, fitnesses, filename, population_size, generation_limit):
     """plot line chart for mincut and fitness value per iteration
     reference: https://matplotlib.org/devdocs/gallery/subplots_axes_and_figures/subplots_demo.html
     """
@@ -112,7 +113,7 @@ def line_chart(mincuts, fitnesses, population_size, filename,):
 
     iterations = range(len(mincuts))
     fig, (ax1, ax2) = plt.subplots(1, 2) # two subplots mincut and fitness
-    fig.suptitle(filename)
+    fig.suptitle("{} (population: {}, generation: {})".format(filename, population_size, generation_limit))
     # ax1: mincut plot
     ax1.set_title("mincut plot")
     ax1.plot(iterations, mincuts)
@@ -124,7 +125,7 @@ def line_chart(mincuts, fitnesses, population_size, filename,):
     ax2.set(xlabel="iterations", ylabel="fitness")
 
     plt.show()
-    fig.savefig("figs/" + "{}_line_chart".format(filename))
+    fig.savefig("figs/" + "{}_line_chart_{}_{}".format(filename, population_size, generation_limit))
 
 def parse_file(filepath):
     """ parse benchmarkfile
@@ -474,7 +475,7 @@ if __name__ == "__main__":
     parse_file(filepath)
 
     # hyper parameters
-    population_size = 20
+    population_size = 10
     generation_limit = 50
 
     final_population = ga(
@@ -496,6 +497,6 @@ if __name__ == "__main__":
     best_cutsize: {}
     '''.format(best_assignment, best_cutsize))
     # print("netlist", netlist)
-    partition_visualizetion(filename, best_cutsize, best_assignment)
-    line_chart(mincuts, fitnesses, population_size, filename[:-4])
+    partition_visualizetion(filename, best_cutsize, best_assignment, population_size, generation_limit)
+    line_chart(mincuts, fitnesses, filename[:-4], population_size, generation_limit)
 
