@@ -7,6 +7,8 @@ from consolemenu import SelectionMenu
 import math
 from collections import Counter
 
+from statistics import stdev
+
 # todo stopping criteria: stop when 80% of the chromosome has same fitness.
 
 def is_balanced(chromosome):
@@ -216,7 +218,7 @@ def generate_assignment(chromosome):
 def generate_chromosome(length):
     """ generate and return a balanced chromosome list(a list of genes(0 or 1)) with given length
 
-using np.randint to generate chromosome 1d array
+    using np.randint to generate chromosome 1d array
 
     Args: 
         length: the length of the chromosome list. it should be the same as the pin numbers
@@ -353,8 +355,9 @@ def exit_criterion(population, cutsize_limit=0):
     """ return True if at least 80% of chromosome has same fitness or min cutsize <= cutsize_upper_limit
     1. fitness criteria
     create a list of fitness and using collections.Counter count fitness occurrence.
-    return True if the most common makes up >= 80% of the population size
-    2. cutsize criteria
+    return True if the most common makes up >= 80% of the population size(didn't work well night need to round number)
+    2. standard deviation? 
+    3. cutsize criteria
     return True if min cutsize <= cutsize_limit
     Args:
         population population List[chromosome]
@@ -362,16 +365,18 @@ def exit_criterion(population, cutsize_limit=0):
         True: the population meet the exit criterion
         False: the population does not meet the exit criterion
     """
-    fitnesses = [calc_fitness(chromosome, population) for chromosome in population]
+    fitnesses = [round(calc_fitness(chromosome, population),2) for chromosome in population]
     size = len(population)
     counter = Counter(fitnesses)
     top = counter.most_common(1)[0][1] # ex. [(5.333333333333334, 6)]
+    fitness_stdev = stdev(fitnesses)
+    print("fitness stdev", fitness_stdev)
 
     population_sort_by_cutsize = sorted(population, key=calc_chromo_cutsize) # cutsize from low to high
     chromosome_mincut = population_sort_by_cutsize[0]
     min_cutsize = calc_chromo_cutsize(chromosome_mincut)
     
-    if top >= 0.8 * size or min_cutsize <= cutsize_limit:
+    if top >= 0.8 * size or min_cutsize <= cutsize_limit or fitness_stdev <= 0.01:
         return True
     else:
         return False
@@ -427,6 +432,8 @@ def ga(
         # stop looping if  we meet the exit criterion
         if exit_criterion_func(population, cutsize_limit):
             break
+        else:
+            print("does not meet")
         
         # pick the best two from population as the part of the next generation
         next_generation = population[0:2]
@@ -475,9 +482,9 @@ if __name__ == "__main__":
     parse_file(filepath)
 
     # hyper parameters
-    population_size = 10
-    generation_limit = 50
-
+    population_size = 50
+    generation_limit = 1000
+    print("population size {}, generation_limit {}".format(population_size, generation_limit))
     final_population = ga(
         population_size=population_size,
         populate_func=generate_population,

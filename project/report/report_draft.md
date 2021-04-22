@@ -102,3 +102,11 @@ and also change the mutation prob like table 4.2 in this paper
 
 
 I found that small population with large generation works faster and better
+
+but small population often stuck at a local optimal value and can hardly go down (cc 10 200 vs 20 200)
+
+stdev does not work well as a exit criteria
+but counting fitness works extremely well for ugly 8 and 16. the results are generated immediately
+small population works for most of the benchmark files. But for some large benchmark files, it is easily to get stuck in a local minimum with just small population
+
+for files like cc and twocm, it won't work even with a population of 100
