@@ -480,8 +480,8 @@ if __name__ == "__main__":
     parse_file(filepath)
 
     # hyper parameters
-    population_size = 20
-    generation_limit = 100
+    population_size = 10
+    generation_limit = 50
     print("population size {}, generation_limit {}".format(population_size, generation_limit))
     final_population = ga(
         population_size=population_size,
