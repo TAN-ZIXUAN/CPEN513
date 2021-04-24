@@ -104,7 +104,7 @@ def partition_visualizetion(filename, best_cutsize, best_assignment, population_
     plt.show()
 
     # save figure
-    fig.savefig("figs/visual/{}_{}_{}".format(filename[:-4], population_size, generation_limit))
+    fig.savefig("figs/{}_{}_{}".format(filename[:-4], population_size, generation_limit))
 
 def line_chart(mincuts, fitnesses, filename, population_size, generation_limit):
     """plot line chart for mincut and fitness value per iteration
@@ -127,7 +127,7 @@ def line_chart(mincuts, fitnesses, filename, population_size, generation_limit):
     ax2.set(xlabel="iterations", ylabel="fitness")
 
     plt.show()
-    fig.savefig("figs/chart/" + "{}_line_chart_{}_{}".format(filename, population_size, generation_limit))
+    fig.savefig("figs/" + "{}_line_chart_{}_{}".format(filename, population_size, generation_limit))
 
 def parse_file(filepath):
     """ parse benchmarkfile
@@ -365,18 +365,18 @@ def exit_criterion(population, cutsize_limit=0):
         True: the population meet the exit criterion
         False: the population does not meet the exit criterion
     """
-    fitnesses = [round(calc_fitness(chromosome, population),0) for chromosome in population]
+    fitnesses = [round(calc_fitness(chromosome, population),2) for chromosome in population]
     size = len(population)
     counter = Counter(fitnesses)
     top = counter.most_common(1)[0][1] # ex. [(5.333333333333334, 6)]
-    fitness_stdev = stdev(fitnesses) # not work well!
+    fitness_stdev = stdev(fitnesses)
     print("fitness stdev", fitness_stdev)
 
     population_sort_by_cutsize = sorted(population, key=calc_chromo_cutsize) # cutsize from low to high
     chromosome_mincut = population_sort_by_cutsize[0]
     min_cutsize = calc_chromo_cutsize(chromosome_mincut)
     
-    if top >= 0.8 * size or min_cutsize <= cutsize_limit:
+    if top >= 0.8 * size or min_cutsize <= cutsize_limit or fitness_stdev <= 0.01:
         return True
     else:
         return False
@@ -432,6 +432,8 @@ def ga(
         # stop looping if  we meet the exit criterion
         if exit_criterion_func(population, cutsize_limit):
             break
+        else:
+            print("does not meet")
         
         # pick the best two from population as the part of the next generation
         next_generation = population[0:2]
@@ -480,8 +482,8 @@ if __name__ == "__main__":
     parse_file(filepath)
 
     # hyper parameters
-    population_size = 10
-    generation_limit = 50
+    population_size = 50
+    generation_limit = 1000
     print("population size {}, generation_limit {}".format(population_size, generation_limit))
     final_population = ga(
         population_size=population_size,

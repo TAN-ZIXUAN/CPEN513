@@ -1,4 +1,4 @@
-# A3 Branch and Bound Partitioning
+#  A3 Branch and Bound Partitioning
 
 ## Running
 
