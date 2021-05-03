@@ -4,7 +4,7 @@
 
 In this project, genetic algorithm is implemented on bi-partitioning to achieve the minimum net cutsize. I tested the genetic bi-partitioning algorithm on various benchmark files. Genetic algorithm is able to generate optimal solutions very fast with small population for most of the benchmark files. Bigger population and generations are needed for larger benchmark files in order to compute a good partitioning.
 
-([GitHub repository](https://github.com/TAN-ZIXUAN/CPEN513/tree/main/partitioning))
+[(GitHub repository)](https://github.com/TAN-ZIXUAN/CPEN513/tree/project/project)
 
 ## Algorithms
 
@@ -158,7 +158,7 @@ def ga(
 
 ## Results and Conclusions
 
-Smaller population works very well and fast for most of the bench mark files. But for bigger benchmark files, genetic algorithm with small population is easily get stuck at a local optimal even if we let it run for many more generation. It needs bigger population and many generations for large benchmark files like `cc` and `twocm`. Also it does not guarantees us a optimal results. I run the genetic algorithm on `cc` and `twocm` for days with very large population and generations and it still fails to give me the results. For `cc` it can only reduce the net cutsize to 6 instead of the optimal net cutsize 4. For `twocm`, it can only reduce the cutsize to around 10 instead of 1. My computer cannot support the algorithm running with more population and generations. So I could not get the optimal results for `cc` and `twocm`. I would not know if the algorithm is just stuck at a local optimal temporarily and will get to the optimal results eventually if running with longer generations.
+Smaller population works very well and fast for most of the benchmark files. But for bigger benchmark files, genetic algorithm with small population is easily get stuck at a local optimal even if we let it run for many more generation. It needs bigger population and many generations for large benchmark files like `cc` and `twocm`. Also it does not guarantees us a optimal results. I run the genetic algorithm on `cc` and `twocm` for days with very large population and generations and it still fails to give me the results. For `cc` it can only reduce the net cutsize to 6 instead of the optimal net cutsize 4. For `twocm`, it can only reduce the cutsize to around 10 instead of 1. My computer cannot support the algorithm running with more population and generations. So I could not get the optimal results for `cc` and `twocm`. I would not know if the algorithm is just stuck at a local optimal temporarily and will get to the optimal results eventually if running with longer generations.
 
 <img src="report.assets/twocm_line_chart_50_2000.png" alt="twocm_line_chart_50_2000" style="zoom:50%;" />
 
