@@ -4,15 +4,13 @@
 
 ([link](https://github.com/TAN-ZIXUAN/CPEN513/tree/main/routing))
 
-
-
-# Placement
-
-(link)
-
 example
 
 <img src="readme.assets/example-1620416353563.gif" alt="example" style="zoom:50%;" />
+
+# Placement
+
+([link](https://github.com/TAN-ZIXUAN/CPEN513/tree/main/placement))
 
 # Bi-partitioning Algorithms
 
